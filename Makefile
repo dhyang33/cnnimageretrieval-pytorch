@@ -1,4 +1,4 @@
-export PYTHONPATH := "/home/mirlab/miniconda3/envs/py3/lib/python3.6/site-packages"
+SHELL := /usr/bin/bash
 
 .PHONY: install
 install:
