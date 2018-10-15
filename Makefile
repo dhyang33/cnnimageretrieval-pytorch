@@ -1,3 +1,5 @@
+export PATH := "/home/mirlab/miniconda3/envs/py3/bin:${PATH}"
+
 .PHONY: install
 install:
 	pip install -e .
