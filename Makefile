@@ -1,4 +1,4 @@
-export PATH := "/home/mirlab/miniconda3/envs/py3/bin:${PATH}"
+export PYTHONPATH := "/home/mirlab/miniconda3/envs/py3/lib/python3.6/site-packages"
 
 .PHONY: install
 install:
