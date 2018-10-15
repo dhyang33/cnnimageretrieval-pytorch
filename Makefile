@@ -1,8 +1,8 @@
-SHELL := /usr/bin/bash
-
 .PHONY: install
 install:
 	pip install -e .
+	echo "You need to run the following command:"
+	echo "source activate py3"
 
 .PHONY: clean
 clean:
