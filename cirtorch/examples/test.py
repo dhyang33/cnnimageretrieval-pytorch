@@ -34,21 +34,21 @@ group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument('--network-path', '-npath', metavar='NETWORK',
                     help='network path, destination where network is saved')
 group.add_argument('--network-offtheshelf', '-noff', metavar='NETWORK',
-                    help='network off-the-shelf, in the format ARCHITECTURE-POOLING or ARCHITECTURE-POOLING-whiten,' + 
+                    help='network off-the-shelf, in the format ARCHITECTURE-POOLING or ARCHITECTURE-POOLING-whiten,' +
                     ' examples: resnet101-gem | resnet101-gem-whiten')
 
 # test options
 parser.add_argument('--datasets', '-d', metavar='DATASETS', default='oxford5k,paris6k',
-                   help='comma separated list of test datasets: ' + 
-                        ' | '.join(datasets_names) + 
+                   help='comma separated list of test datasets: ' +
+                        ' | '.join(datasets_names) +
                         ' (default: oxford5k,paris6k)')
 parser.add_argument('--image-size', '-imsize', default=1024, type=int, metavar='N',
                     help='maximum size of longer image side used for testing (default: 1024)')
 parser.add_argument('--multiscale', '-ms', dest='multiscale', action='store_true',
                     help='use multiscale vectors for testing')
 parser.add_argument('--whitening', '-w', metavar='WHITENING', default=None, choices=whitening_names,
-                    help='dataset used to learn whitening for testing: ' + 
-                        ' | '.join(whitening_names) + 
+                    help='dataset used to learn whitening for testing: ' +
+                        ' | '.join(whitening_names) +
                         ' (default: None)')
 
 # GPU ID
@@ -74,14 +74,14 @@ def main():
             state = load_url(PRETRAINED[args.network_path], model_dir=os.path.join(get_data_root(), 'networks'))
         else:
             state = torch.load(args.network_path)
-        net = init_network(model=state['meta']['architecture'], pooling=state['meta']['pooling'], whitening=state['meta']['whitening'], 
+        net = init_network(model=state['meta']['architecture'], pooling=state['meta']['pooling'], whitening=state['meta']['whitening'],
                             mean=state['meta']['mean'], std=state['meta']['std'], pretrained=False)
         net.load_state_dict(state['state_dict'])
-        
+
         # if whitening is precomputed
         if 'Lw' in state['meta']:
             net.meta['Lw'] = state['meta']['Lw']
-        
+
         print(">>>> loaded network: ")
         print(net.meta_repr())
 
@@ -126,9 +126,9 @@ def main():
         start = time.time()
 
         if 'Lw' in net.meta and args.whitening in net.meta['Lw']:
-            
+
             print('>> {}: Whitening is precomputed, loading it...'.format(args.whitening))
-            
+
             if args.multiscale:
                 Lw = net.meta['Lw'][args.whitening]['ms']
             else:
@@ -149,8 +149,8 @@ def main():
             # extract whitening vectors
             print('>> {}: Extracting...'.format(args.whitening))
             wvecs = extract_vectors(net, images, args.image_size, transform, ms=ms, msp=msp)
-            
-            # learning whitening 
+
+            # learning whitening
             print('>> {}: Learning...'.format(args.whitening))
             wvecs = wvecs.numpy()
             m, P = whitenlearn(wvecs, db['qidxs'], db['pidxs'])
@@ -162,23 +162,43 @@ def main():
 
     # evaluate on test datasets
     datasets = args.datasets.split(',')
-    for dataset in datasets: 
+    for dataset in datasets:
         start = time.time()
 
         print('>> {}: Extracting...'.format(dataset))
 
-        # prepare config structure for the test dataset
-        cfg = configdataset(dataset, os.path.join(get_data_root(), 'test'))
-        images = [cfg['im_fname'](cfg,i) for i in range(cfg['n'])]
-        qimages = [cfg['qim_fname'](cfg,i) for i in range(cfg['nq'])]
-        bbxs = [tuple(cfg['gnd'][i]['bbx']) for i in range(cfg['nq'])]
-        
-        # extract database and query vectors
-        print('>> {}: database images...'.format(dataset))
-        vecs = extract_vectors(net, images, args.image_size, transform, ms=ms, msp=msp)
-        print('>> {}: query images...'.format(dataset))
-        qvecs = extract_vectors(net, qimages, args.image_size, transform, bbxs=bbxs, ms=ms, msp=msp)
-        
+        if dataset == "scores":
+            # Special added logic to handle loading our score dataset
+            from score_retrieval.data import index_data
+
+            images, image_labels, qimages, qimage_labels = index_data()
+
+            print('>> {}: database images...'.format(dataset))
+            vecs = extract_vectors(net, images, args.image_size, transform, ms=ms, msp=msp)
+            print('>> {}: query images...'.format(dataset))
+            qvecs = extract_vectors(net, qimages, args.image_size, transform, ms=ms, msp=msp)
+
+
+        else:
+            # extract ground truth
+            cfg = configdataset(dataset, os.path.join(get_data_root(), 'test'))
+            gnd = cfg['gnd']
+            print(gnd)
+
+            # prepare config structure for the test dataset
+            images = [cfg['im_fname'](cfg,i) for i in range(cfg['n'])]
+            qimages = [cfg['qim_fname'](cfg,i) for i in range(cfg['nq'])]
+            bbxs = [tuple(gnd[i]['bbx']) for i in range(cfg['nq'])]
+
+            # extract database and query vectors
+            print('>> {}: database images...'.format(dataset))
+            vecs = extract_vectors(net, images, args.image_size, transform, ms=ms, msp=msp)
+            print('>> {}: query images...'.format(dataset))
+            qvecs = extract_vectors(net, qimages, args.image_size, transform, bbxs=bbxs, ms=ms, msp=msp)
+
+        # validation
+        assert len(gnd) == len(qimages), (len(gnd), len(qimages))
+
         print('>> {}: Evaluating...'.format(dataset))
 
         # convert to numpy
@@ -188,8 +208,8 @@ def main():
         # search, rank, and print
         scores = np.dot(vecs.T, qvecs)
         ranks = np.argsort(-scores, axis=0)
-        compute_map_and_print(dataset, ranks, cfg['gnd'])
-    
+        compute_map_and_print(dataset, ranks, gnd)
+
         if Lw is not None:
             # whiten the vectors
             vecs_lw  = whitenapply(vecs, Lw['m'], Lw['P'])
@@ -198,8 +218,8 @@ def main():
             # search, rank, and print
             scores = np.dot(vecs_lw.T, qvecs_lw)
             ranks = np.argsort(-scores, axis=0)
-            compute_map_and_print(dataset + ' + whiten', ranks, cfg['gnd'])
-        
+            compute_map_and_print(dataset + ' + whiten', ranks, gnd)
+
         print('>> {}: elapsed time: {}'.format(dataset, htime(time.time()-start)))
 
 
