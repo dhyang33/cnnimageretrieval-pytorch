@@ -3,6 +3,7 @@ import os
 import time
 import math
 import pickle
+from pprint import pprint
 
 import numpy as np
 
@@ -183,7 +184,8 @@ def main():
             # extract ground truth
             cfg = configdataset(dataset, os.path.join(get_data_root(), 'test'))
             gnd = cfg['gnd']
-            print(gnd)
+            print('>> {}: ground truth...'.format(dataset))
+            pprint(gnd)
 
             # prepare config structure for the test dataset
             images = [cfg['im_fname'](cfg,i) for i in range(cfg['n'])]
