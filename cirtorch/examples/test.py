@@ -168,7 +168,7 @@ def main():
 
         print('>> {}: Extracting...'.format(dataset))
 
-        if dataset in ["scores", "rscores"]:
+        if dataset == "scores":
             # Special added logic to handle loading our score dataset
             from score_retrieval.data import index_data, indices_with_label
 
