@@ -174,6 +174,7 @@ def main():
 
             images, image_labels, qimages, qimage_labels = index_data()
             gnd = [{"ok": indices_with_label(label, image_labels), "junk": []} for label in qimage_labels]
+            print(">> {}: stats: {}, {}, {}".format(dataset, images, qimages, gnd)
 
             print('>> {}: database images...'.format(dataset))
             vecs = extract_vectors(net, images, args.image_size, transform, ms=ms, msp=msp)
