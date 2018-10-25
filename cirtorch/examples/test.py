@@ -184,7 +184,12 @@ def main():
             # extract ground truth
             cfg = configdataset(dataset, os.path.join(get_data_root(), 'test'))
             gnd = cfg['gnd']
-            print(">> {}: gnd stats: {}, {}".format(dataset, len(gnd), len(gnd[0]["ok"]) + len(gnd[0]["junk"])))
+            print(">> {}: gnd stats: {}, {}".format(
+                dataset,
+                len(gnd),
+                [len(x["ok"]) for x in gnd],
+                [len(x["junk"]) for x in gnd],
+            ))
 
             # prepare config structure for the test dataset
             images = [cfg['im_fname'](cfg,i) for i in range(cfg['n'])]
