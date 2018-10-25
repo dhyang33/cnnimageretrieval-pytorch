@@ -184,7 +184,7 @@ def main():
             # extract ground truth
             cfg = configdataset(dataset, os.path.join(get_data_root(), 'test'))
             gnd = cfg['gnd']
-            print(">> {}: gnd stats: {}, {}".format(
+            print(">> {}: gnd stats: {}, {}, {}".format(
                 dataset,
                 len(gnd),
                 [len(x["ok"]) for x in gnd],
