@@ -184,13 +184,13 @@ def main():
             # extract ground truth
             cfg = configdataset(dataset, os.path.join(get_data_root(), 'test'))
             gnd = cfg['gnd']
-            print('>> {}: ground truth...'.format(dataset))
-            pprint(gnd)
+            print(">> {}: gnd stats: {}, {}".format(dataset, len(gnd), len(gnd[0]["ok"]) + len(gnd[0]["junk"])))
 
             # prepare config structure for the test dataset
             images = [cfg['im_fname'](cfg,i) for i in range(cfg['n'])]
             qimages = [cfg['qim_fname'](cfg,i) for i in range(cfg['nq'])]
             bbxs = [tuple(gnd[i]['bbx']) for i in range(cfg['nq'])]
+            print(">> {}: image stats: {}, {}".format(dataset, len(images), len(qimages)))
 
             # extract database and query vectors
             print('>> {}: database images...'.format(dataset))
