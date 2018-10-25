@@ -168,13 +168,12 @@ def main():
 
         print('>> {}: Extracting...'.format(dataset))
 
-        if dataset == "scores":
+        if dataset in ["scores", "rscores"]:
             # Special added logic to handle loading our score dataset
             from score_retrieval.data import index_data, indices_with_label
 
             images, image_labels, qimages, qimage_labels = index_data()
             gnd = [{"ok": indices_with_label(label, image_labels), "junk": []} for label in qimage_labels]
-            print(">> {}: stats: {}, {}, {}".format(dataset, images, qimages, gnd)
 
             print('>> {}: database images...'.format(dataset))
             vecs = extract_vectors(net, images, args.image_size, transform, ms=ms, msp=msp)
@@ -186,18 +185,11 @@ def main():
             # extract ground truth
             cfg = configdataset(dataset, os.path.join(get_data_root(), 'test'))
             gnd = cfg['gnd']
-            print(">> {}: gnd stats: {}, {}, {}".format(
-                dataset,
-                len(gnd),
-                [len(x["ok"]) for x in gnd],
-                [len(x["junk"]) for x in gnd],
-            ))
 
             # prepare config structure for the test dataset
             images = [cfg['im_fname'](cfg,i) for i in range(cfg['n'])]
             qimages = [cfg['qim_fname'](cfg,i) for i in range(cfg['nq'])]
             bbxs = [tuple(gnd[i]['bbx']) for i in range(cfg['nq'])]
-            print(">> {}: image stats: {}, {}".format(dataset, len(images), len(qimages)))
 
             # extract database and query vectors
             print('>> {}: database images...'.format(dataset))
@@ -206,6 +198,13 @@ def main():
             qvecs = extract_vectors(net, qimages, args.image_size, transform, bbxs=bbxs, ms=ms, msp=msp)
 
         # validation
+        print(">> {}: gnd stats: {}, {}, {}".format(
+            dataset,
+            len(gnd),
+            [len(x["ok"]) for x in gnd],
+            [len(x["junk"]) for x in gnd],
+        ))
+        print(">> {}: image stats: {}, {}".format(dataset, len(images), len(qimages)))
         assert len(gnd) == len(qimages), (len(gnd), len(qimages))
 
         print('>> {}: Evaluating...'.format(dataset))
