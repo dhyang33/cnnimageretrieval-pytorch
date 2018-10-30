@@ -31,11 +31,12 @@ def rmac(x, L=3, eps=1e-6):
 
     b = (max(H, W)-w)/(steps-1)
     (tmp, idx) = torch.min(torch.abs(((w**2 - w*b)/w**2)-ovr), 0) # steps(idx) regions for long dimension
+    print("x = {}, tmp = {}, idx = {}".format(x, tmp, idx))
 
     # region overplus per dimension
     Wd = 0;
     Hd = 0;
-    if H < W:  
+    if H < W:
         Wd = idx.tolist()[0]
     elif H > W:
         Hd = idx.tolist()[0]
@@ -57,7 +58,7 @@ def rmac(x, L=3, eps=1e-6):
         else:
             b = (H-wl)/(l+Hd-1)
         cenH = torch.floor(wl2 + torch.Tensor(range(l-1+Hd+1))*b) - wl2 # center coordinates
-            
+
         for i_ in cenH.tolist():
             for j_ in cenW.tolist():
                 if wl == 0:
