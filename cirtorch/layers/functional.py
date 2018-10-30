@@ -19,6 +19,10 @@ def gem(x, p=3, eps=1e-6):
     return F.avg_pool2d(x.clamp(min=eps).pow(p), (x.size(-2), x.size(-1))).pow(1./p)
     # return F.lp_pool2d(F.threshold(x, eps, eps), p, (x.size(-2), x.size(-1))) # alternative
 
+def tolist(x):
+    out = x.tolist()
+    return out[0] if isinstance(out, list) else out
+
 def rmac(x, L=3, eps=1e-6):
     ovr = 0.4 # desired overlap of neighboring regions
     steps = torch.Tensor([2, 3, 4, 5, 6, 7]) # possible regions for the long dimension
@@ -31,15 +35,14 @@ def rmac(x, L=3, eps=1e-6):
 
     b = (max(H, W)-w)/(steps-1)
     (tmp, idx) = torch.min(torch.abs(((w**2 - w*b)/w**2)-ovr), 0) # steps(idx) regions for long dimension
-    print("x = {}, tmp = {}, idx = {}".format(x, tmp, idx))
 
     # region overplus per dimension
     Wd = 0;
     Hd = 0;
     if H < W:
-        Wd = idx.tolist()[0]
+        Wd = tolist(idx)[0]
     elif H > W:
-        Hd = idx.tolist()[0]
+        Hd = tolist(idx)[0]
 
     v = F.max_pool2d(x, (x.size(-2), x.size(-1)))
     v = v / (torch.norm(v, p=2, dim=1, keepdim=True) + eps).expand_as(v)
@@ -59,8 +62,8 @@ def rmac(x, L=3, eps=1e-6):
             b = (H-wl)/(l+Hd-1)
         cenH = torch.floor(wl2 + torch.Tensor(range(l-1+Hd+1))*b) - wl2 # center coordinates
 
-        for i_ in cenH.tolist():
-            for j_ in cenW.tolist():
+        for i_ in tolist(cenH):
+            for j_ in tolist(cenW):
                 if wl == 0:
                     continue
                 R = x[:,:,(int(i_)+torch.Tensor(range(wl)).long()).tolist(),:]
