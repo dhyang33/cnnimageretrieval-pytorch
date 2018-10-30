@@ -48,7 +48,7 @@ def compute_mrr(ranks, gnd, dataset=None):
     mrrs = np.asarray(mrrs)
     mrr = np.mean(mrrs)
     if dataset is not None:
-        print('>> {}: mRR {:.2f}'.format(dataset, np.around(mrr*100, decimals=2)))
+        print('>> {}: mRR {:.2f}'.format(dataset, np.around(mrr, decimals=4)))
     return mrr
 
 
@@ -65,7 +65,7 @@ def compute_acc(ranks, gnd, dataset=None):
                 correct += 1
     acc = correct/total
     if dataset is not None:
-        print('>> {}: acc {:.2f}'.format(dataset, np.around(acc*100, decimals=2)))
+        print('>> {}: acc {:.2f}'.format(dataset, np.around(acc, decimals=4)))
     return acc
 
 
@@ -173,10 +173,10 @@ def compute_map_and_print(dataset, ranks, gnd, kappas=[1, 5, 10]):
             gnd_t.append(g)
         mapH, apsH, mprH, prsH = compute_map(ranks, gnd_t, kappas)
 
-        print('>> {}: mAP E: {}, M: {}, H: {}'.format(dataset, np.around(mapE*100, decimals=2), np.around(mapM*100, decimals=2), np.around(mapH*100, decimals=2)))
-        print('>> {}: mP@k{} E: {}, M: {}, H: {}'.format(dataset, kappas, np.around(mprE*100, decimals=2), np.around(mprM*100, decimals=2), np.around(mprH*100, decimals=2)))
+        print('>> {}: mAP E: {}, M: {}, H: {}'.format(dataset, np.around(mapE, decimals=4), np.around(mapM, decimals=4), np.around(mapH, decimals=4)))
+        print('>> {}: mP@k{} E: {}, M: {}, H: {}'.format(dataset, kappas, np.around(mprE, decimals=4), np.around(mprM, decimals=4), np.around(mprH, decimals=4)))
 
     # old evaluation protocol
     else:
         map, aps, _, _ = compute_map(ranks, gnd)
-        print('>> {}: mAP {:.2f}'.format(dataset, np.around(map*100, decimals=2)))
+        print('>> {}: mAP {:.2f}'.format(dataset, np.around(map, decimals=4)))
