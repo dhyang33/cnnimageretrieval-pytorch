@@ -42,9 +42,9 @@ def compute_mrr(ranks, gnd, dataset=None):
     mrrs = []
     for i in range(nq):
         qgnd = np.array(gnd[i]["ok"])
-        pos = np.arange(ranks.shape[0])[np.in1d(ranks[:,i], qgnd)]
-        print("pos", pos)
-        mrrs.append(np.mean(1/(pos + 1)))
+        if qgnd:
+            pos = np.arange(ranks.shape[0])[np.in1d(ranks[:,i], qgnd)]
+            mrrs.append(np.mean(1/(pos + 1)))
     mrrs = np.asarray(mrrs)
     mrr = np.mean(mrrs)
     if dataset is not None:
@@ -54,13 +54,16 @@ def compute_mrr(ranks, gnd, dataset=None):
 
 def compute_acc(ranks, gnd, dataset=None):
     nq = len(gnd)
+    total = 0
     correct = 0
     for i in range(nq):
         qgnd = np.array(gnd[i]["ok"])
-        pos = np.arange(ranks.shape[0])[np.in1d(ranks[:,i], qgnd)]
-        if 0 in pos:
-            correct += 1
-    acc = correct/nq
+        if qgnd:
+            pos = np.arange(ranks.shape[0])[np.in1d(ranks[:,i], qgnd)]
+            total += 1
+            if 0 in pos:
+                correct += 1
+    acc = correct/total
     if dataset is not None:
         print('>> {}: acc {:.2f}'.format(dataset, np.around(acc*100, decimals=2)))
     return acc
