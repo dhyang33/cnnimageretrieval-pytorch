@@ -21,7 +21,7 @@ def gem(x, p=3, eps=1e-6):
 
 def tolist(x):
     out = x.tolist()
-    return out[0] if isinstance(out, list) else out
+    return out if isinstance(out, list) else [out]
 
 def rmac(x, L=3, eps=1e-6):
     ovr = 0.4 # desired overlap of neighboring regions
