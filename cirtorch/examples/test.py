@@ -17,7 +17,7 @@ from cirtorch.datasets.datahelpers import cid2filename
 from cirtorch.datasets.testdataset import configdataset
 from cirtorch.utils.download import download_train, download_test
 from cirtorch.utils.whiten import whitenlearn, whitenapply
-from cirtorch.utils.evaluate import compute_map_and_print
+from cirtorch.utils.evaluate import compute_map_and_print, compute_mrr, compute_acc
 from cirtorch.utils.general import get_data_root, htime
 
 PRETRAINED = {
@@ -217,6 +217,10 @@ def main():
         scores = np.dot(vecs.T, qvecs)
         ranks = np.argsort(-scores, axis=0)
         compute_map_and_print(dataset, ranks, gnd)
+
+        # MRR and accuracy
+        compute_mrr(ranks, gnd, dataset)
+        compute_acc(ranks, gnd, dataset)
 
         if Lw is not None:
             # whiten the vectors

@@ -36,6 +36,35 @@ def compute_ap(ranks, nres):
 
     return ap
 
+
+def compute_mrr(ranks, gnd, dataset=None):
+    nq = len(gnd)
+    mrrs = []
+    for i in range(nq):
+        qgnd = np.array(gnd[i]["ok"])
+        pos = np.arange(ranks.shape[0])[np.in1d(ranks[:,i], qgnd)]
+        mrrs.append(np.mean(1/pos))
+    mrrs = np.asarray(mrrs)
+    mrr = np.mean(mrrs)
+    if dataset is not None:
+        print('>> {}: mRR {:.2f}'.format(dataset, np.around(mrr*100, decimals=2)))
+    return mrr
+
+
+def compute_acc(ranks, gnd, dataset=None):
+    nq = len(gnd)
+    correct = 0
+    for i in range(nq):
+        qgnd = np.array(gnd[i]["ok"])
+        pos = np.arange(ranks.shape[0])[np.in1d(ranks[:,i], qgnd)]
+        if 0 in pos:
+            correct += 1
+    acc = correct/nq
+    if dataset is not None:
+        print('>> {}: acc {:.2f}'.format(dataset, np.around(acc*100, decimals=2)))
+    return acc
+
+
 def compute_map(ranks, gnd, kappas=[]):
     """
     Computes the mAP for a given set of returned results.
