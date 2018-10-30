@@ -43,7 +43,8 @@ def compute_mrr(ranks, gnd, dataset=None):
     for i in range(nq):
         qgnd = np.array(gnd[i]["ok"])
         pos = np.arange(ranks.shape[0])[np.in1d(ranks[:,i], qgnd)]
-        mrrs.append(np.mean(1/pos))
+        print("pos", pos)
+        mrrs.append(np.mean(1/(pos + 1)))
     mrrs = np.asarray(mrrs)
     mrr = np.mean(mrrs)
     if dataset is not None:
