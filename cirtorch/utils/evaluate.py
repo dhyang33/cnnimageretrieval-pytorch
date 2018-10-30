@@ -42,7 +42,7 @@ def compute_mrr(ranks, gnd, dataset=None):
     mrrs = []
     for i in range(nq):
         qgnd = np.array(gnd[i]["ok"])
-        if qgnd:
+        if len(qgnd):
             pos = np.arange(ranks.shape[0])[np.in1d(ranks[:,i], qgnd)]
             mrrs.append(np.mean(1/(pos + 1)))
     mrrs = np.asarray(mrrs)
@@ -58,7 +58,7 @@ def compute_acc(ranks, gnd, dataset=None):
     correct = 0
     for i in range(nq):
         qgnd = np.array(gnd[i]["ok"])
-        if qgnd:
+        if len(qgnd):
             pos = np.arange(ranks.shape[0])[np.in1d(ranks[:,i], qgnd)]
             total += 1
             if 0 in pos:
