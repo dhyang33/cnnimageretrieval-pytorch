@@ -215,7 +215,6 @@ def main():
         # search, rank, and print
         scores = np.dot(vecs.T, qvecs)
         ranks = np.argsort(-scores, axis=0)
-        print(">> {}: scores (shape {}) head: {}".format(dataset, scores.shape, scores[10:,10:]))
         print(">> {}: ranks (shape {}) head: {}".format(dataset, ranks.shape, ranks[10:,10:]))
         print(">> {}: gnd head: {}".format(dataset, gnd[10:]))
 
