@@ -216,7 +216,7 @@ def main():
         scores = np.dot(vecs.T, qvecs)
         ranks = np.argsort(-scores, axis=0)
         print(">> {}: scores (shape {}) head: {}".format(dataset, scores.shape, scores[10:]))
-        print(">> {}: ranks (shape {}) head: {}".format(dataset, ranks.shape ranks[10:]))
+        print(">> {}: ranks (shape {}) head: {}".format(dataset, ranks.shape, ranks[10:]))
 
         # Compute and print metrics
         compute_acc(ranks, gnd, dataset)
