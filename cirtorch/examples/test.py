@@ -200,8 +200,8 @@ def main():
         print(">> {}: gnd stats: {}, {}, {}".format(
             dataset,
             len(gnd),
-            [len(x["ok"]) for x in gnd],
-            [len(x["junk"]) for x in gnd],
+            [len(x["ok"]) for x in gnd[10:]],
+            [len(x["junk"]) for x in gnd[10:]],
         ))
         print(">> {}: image stats: {}, {}".format(dataset, len(images), len(qimages)))
         assert len(gnd) == len(qimages), (len(gnd), len(qimages))
@@ -215,8 +215,9 @@ def main():
         # search, rank, and print
         scores = np.dot(vecs.T, qvecs)
         ranks = np.argsort(-scores, axis=0)
-        print(">> {}: scores (shape {}) head: {}".format(dataset, scores.shape, scores[10:]))
-        print(">> {}: ranks (shape {}) head: {}".format(dataset, ranks.shape, ranks[10:]))
+        print(">> {}: scores (shape {}) head: {}".format(dataset, scores.shape, scores[10:,10:]))
+        print(">> {}: ranks (shape {}) head: {}".format(dataset, ranks.shape, ranks[10:,10:]))
+        print(">> {}: gnd head: {}".format(dataset, gnd[10:]))
 
         # Compute and print metrics
         compute_acc(ranks, gnd, dataset)
