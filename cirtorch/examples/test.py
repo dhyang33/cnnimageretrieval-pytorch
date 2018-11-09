@@ -180,7 +180,6 @@ def main():
             print('>> {}: query images...'.format(dataset))
             qvecs = extract_vectors(net, qimages, args.image_size, transform, ms=ms, msp=msp)
 
-
         else:
             # extract ground truth
             cfg = configdataset(dataset, os.path.join(get_data_root(), 'test'))
@@ -216,11 +215,13 @@ def main():
         # search, rank, and print
         scores = np.dot(vecs.T, qvecs)
         ranks = np.argsort(-scores, axis=0)
-        compute_map_and_print(dataset, ranks, gnd)
+        print(">> {}: scores (shape {}) head: {}".format(dataset, scores.shape, scores[10:]))
+        print(">> {}: ranks (shpae {}) head: {}".format(dataset, ranks.shape ranks[10:]))
 
-        # MRR and accuracy
-        compute_mrr(ranks, gnd, dataset)
+        # Compute and print metrics
         compute_acc(ranks, gnd, dataset)
+        compute_map_and_print(dataset, ranks, gnd)
+        compute_mrr(ranks, gnd, dataset)
 
         if Lw is not None:
             # whiten the vectors
