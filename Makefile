@@ -1,7 +1,10 @@
+export PYTHONPATH := ""
+
 .PHONY: install
 install:
-	echo "You need to run the following command:"
+	echo "You need to run all of the following commands:"
 	echo "source activate py3"
+	echo "export PYTHONPATH=\"${PYTHONPATH}\""
 	pip install -e .
 
 .PHONY: clean
