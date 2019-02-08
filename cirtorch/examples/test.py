@@ -56,6 +56,49 @@ parser.add_argument('--whitening', '-w', metavar='WHITENING', default=None, choi
 parser.add_argument('--gpu-id', '-g', default='0', metavar='N',
                     help='gpu id used for testing (default: 0)')
 
+
+def load_network(network_path):
+    """Load network from a path."""
+    print(">> Loading network:\n>>>> '{}'".format(network_path))
+    if network_path in PRETRAINED:
+        # pretrained networks (downloaded automatically)
+        state = load_url(PRETRAINED[network_path], model_dir=os.path.join(get_data_root(), 'networks'))
+    else:
+        state = torch.load(network_path)
+    net = init_network(model=state['meta']['architecture'], pooling=state['meta']['pooling'], whitening=state['meta']['whitening'],
+                        mean=state['meta']['mean'], std=state['meta']['std'], pretrained=False)
+    net.load_state_dict(state['state_dict'])
+
+    # if whitening is precomputed
+    if 'Lw' in state['meta']:
+        net.meta['Lw'] = state['meta']['Lw']
+
+    print(">>>> loaded network: ")
+    print(net.meta_repr())
+
+    return net
+
+
+def load_offtheshelf(network_name):
+    """Load off the shelf network."""
+    offtheshelf = network_name.split('-')
+    if len(offtheshelf)==3:
+        if offtheshelf[2]=='whiten':
+            offtheshelf_whiten = True
+        else:
+            raise(RuntimeError("Incorrect format of the off-the-shelf network. Examples: resnet101-gem | resnet101-gem-whiten"))
+    else:
+        offtheshelf_whiten = False
+
+    print(">> Loading off-the-shelf network:\n>>>> '{}'".format(args.network_offtheshelf))
+    net = init_network(model=offtheshelf[0], pooling=offtheshelf[1], whitening=offtheshelf_whiten)
+
+    print(">>>> loaded network: ")
+    print(net.meta_repr())
+
+    return net
+
+
 def main():
     args = parser.parse_args()
 
@@ -69,37 +112,11 @@ def main():
 
     # loading network from path
     if args.network_path is not None:
-        print(">> Loading network:\n>>>> '{}'".format(args.network_path))
-        if args.network_path in PRETRAINED:
-            # pretrained networks (downloaded automatically)
-            state = load_url(PRETRAINED[args.network_path], model_dir=os.path.join(get_data_root(), 'networks'))
-        else:
-            state = torch.load(args.network_path)
-        net = init_network(model=state['meta']['architecture'], pooling=state['meta']['pooling'], whitening=state['meta']['whitening'],
-                            mean=state['meta']['mean'], std=state['meta']['std'], pretrained=False)
-        net.load_state_dict(state['state_dict'])
-
-        # if whitening is precomputed
-        if 'Lw' in state['meta']:
-            net.meta['Lw'] = state['meta']['Lw']
-
-        print(">>>> loaded network: ")
-        print(net.meta_repr())
+        net = load_network(args.network_path)
 
     # loading offtheshelf network
     elif args.network_offtheshelf is not None:
-        offtheshelf = args.network_offtheshelf.split('-')
-        if len(offtheshelf)==3:
-            if offtheshelf[2]=='whiten':
-                offtheshelf_whiten = True
-            else:
-                raise(RuntimeError("Incorrect format of the off-the-shelf network. Examples: resnet101-gem | resnet101-gem-whiten"))
-        else:
-            offtheshelf_whiten = False
-        print(">> Loading off-the-shelf network:\n>>>> '{}'".format(args.network_offtheshelf))
-        net = init_network(model=offtheshelf[0], pooling=offtheshelf[1], whitening=offtheshelf_whiten)
-        print(">>>> loaded network: ")
-        print(net.meta_repr())
+        net = load_offtheshelf(args.network_offtheshelf)
 
     # setting up the multi-scale parameters
     ms = [1]
