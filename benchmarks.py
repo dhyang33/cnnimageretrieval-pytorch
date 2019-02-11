@@ -56,12 +56,11 @@ def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10):
 
 
 def call_benchmark(
-    network="retrievalSfM120k-resnet101-gem",
-
     # must pass one of the below
     images=None,
     paths=None,
 
+    network="retrievalSfM120k-resnet101-gem",
     offtheshelf=False,
     image_size=1024,
 ):
