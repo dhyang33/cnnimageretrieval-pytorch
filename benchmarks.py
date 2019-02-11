@@ -57,24 +57,15 @@ def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10):
 
 def call_benchmark(
     network,
-    database_labels,
-    query_labels,
 
-    # must pass either database_images or database_paths but not both
-    database_images=None,
-    database_paths=None,
-
-    # must pass either query_images or query_paths but not both
-    query_images=None,
-    query_paths=None,
+    # must pass one of the below
+    images=None,
+    paths=None,
 
     offtheshelf=True,
     image_size=1024,
 ):
-    """Run the given network on the given data and return ranks, gnd."""
-    # convert images
-    database_images
-
+    """Run the given network on the given data and return vectors for it."""
     # load network
     if offtheshelf:
         net = load_offtheshelf(network)
@@ -100,26 +91,12 @@ def call_benchmark(
     ])
 
     # process the given data
-    gnd = [{"ok": indices_with_label(label, database_labels), "junk": []} for label in query_labels]
-
-    print('>> processing database images...')
-    if database_images is not None:
-        vecs = vectors_from_images(net, database_images, transform, ms=ms, msp=msp)
+    if images is not None:
+        vecs = vectors_from_images(net, images, transform, ms=ms, msp=msp)
     else:
-        vecs = extract_vectors(net, database_paths, image_size, transform, ms=ms, msp=msp)
-
-    print('>> processing query images...')
-    if query_images is not None:
-        qvecs = vectors_from_images(net, query_images, transform, ms=ms, msp=msp)
-    else:
-        qvecs = extract_vectors(net, query_paths, image_size, transform, ms=ms, msp=msp)
+        vecs = extract_vectors(net, paths, image_size, transform, ms=ms, msp=msp)
 
     # convert to numpy
     vecs = vecs.numpy()
-    qvecs = qvecs.numpy()
 
-    # search, rank, and print
-    scores = np.dot(vecs.T, qvecs)
-    ranks = np.argsort(-scores, axis=0)
-
-    return ranks, gnd
+    return vecs
