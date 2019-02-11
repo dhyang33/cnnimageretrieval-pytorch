@@ -92,7 +92,7 @@ def call_benchmark(
 
     # process the given data
     if images is not None:
-        vecs = vectors_from_images(net, images, transform, ms=ms, msp=msp)
+        vecs = vectors_from_images(net, np.asarray(images), transform, ms=ms, msp=msp)
     else:
         vecs = extract_vectors(net, paths, image_size, transform, ms=ms, msp=msp)
 
