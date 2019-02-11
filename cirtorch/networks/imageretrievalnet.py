@@ -54,7 +54,7 @@ OUTPUT_DIM = {
 
 
 class ImageRetrievalNet(nn.Module):
-    
+
     def __init__(self, features, pool, whiten, meta):
         super(ImageRetrievalNet, self).__init__()
         self.features = nn.Sequential(*features)
@@ -62,7 +62,7 @@ class ImageRetrievalNet(nn.Module):
         self.whiten = whiten
         self.norm = L2N()
         self.meta = meta
-    
+
     def forward(self, x):
         # features -> pool -> norm
         o = self.norm(self.pool(self.features(x))).squeeze(-1).squeeze(-1)
@@ -120,7 +120,7 @@ def init_network(model='resnet101', pooling='gem', whitening=False, mean=[0.485,
         features = list(net_in.features.children())
     else:
         raise ValueError('Unsupported or unknown model: {}!'.format(model))
-    
+
     # initialize pooling
     pool = POOLING[pooling]()
 
@@ -158,10 +158,11 @@ def init_network(model='resnet101', pooling='gem', whitening=False, mean=[0.485,
     return net
 
 
-def extract_vectors(net, images, image_size, transform, bbxs=None, ms=[1], msp=1, print_freq=10):
+def extract_vectors(net, images, image_size, transform, bbxs=None, ms=[1], msp=1, print_freq=10, setup_network=True):
     # moving network to gpu and eval mode
-    net.cuda()
-    net.eval()
+    if setup_network:
+        net.cuda()
+        net.eval()
 
     # creating dataset loader
     loader = torch.utils.data.DataLoader(
@@ -190,17 +191,17 @@ def extract_ss(net, input_var):
 
 
 def extract_ms(net, input_var, ms, msp):
-    
+
     v = torch.zeros(net.meta['outputdim'])
-    
-    for s in ms: 
+
+    for s in ms:
         if s == 1:
             input_var_t = input_var.clone()
-        else:    
+        else:
             size = (int(input_var.size(-2) * s), int(input_var.size(-1) * s))
             input_var_t = nn.functional.upsample(input_var, size=size, mode='bilinear')
         v += net(input_var_t).pow(msp).cpu().data.squeeze()
-        
+
     v /= len(ms)
     v = v.pow(1./msp)
     v /= v.norm()

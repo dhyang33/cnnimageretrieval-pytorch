@@ -24,11 +24,6 @@ from score_retrieval.data import indices_with_label
 
 def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10, setup_network=True):
     """Extract vectors from images given as a pytorch array."""
-    # convert images to pytorch
-    proc_images = []
-    for image in images:
-        proc_images.append(torch.from_numpy(image))
-
     # moving network to gpu and eval mode
     if setup_network:
         net.cuda()
@@ -36,12 +31,12 @@ def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10, se
 
     # creating dataset loader
     loader = torch.utils.data.DataLoader(
-        ImagesFromDataList(images=proc_images, transform=transform),
+        ImagesFromDataList(images=images, transform=transform),
         batch_size=1, shuffle=False, num_workers=8, pin_memory=True
     )
 
     # extracting vectors
-    vecs = torch.zeros(net.meta['outputdim'], len(proc_images))
+    vecs = torch.zeros(net.meta['outputdim'], len(images))
     for i, input in enumerate(loader):
         input_var = Variable(input.cuda())
 
@@ -50,14 +45,14 @@ def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10, se
         else:
             vecs[:, i] = extract_ms(net, input_var, ms, msp)
 
-        if (i+1) % print_freq == 0 or (i+1) == len(proc_images):
-            print('{}/{}...'.format((i+1), len(proc_images)), end='')
+        if (i+1) % print_freq == 0 or (i+1) == len(images):
+            print('{}/{}...'.format((i+1), len(images)), end='')
     print('done')
     return vecs
 
 
 def call_benchmark(
-    # must pass one of the below
+    # must pass one of images or paths
     images=None,
     paths=None,
 
@@ -89,14 +84,14 @@ def call_benchmark(
     )
     transform = transforms.Compose([
         transforms.ToTensor(),
-        normalize
+        normalize,
     ])
 
     # process the given data
     if images is not None:
         vecs = vectors_from_images(net, np.asarray(images), transform, ms=ms, msp=msp, setup_network=False)
     else:
-        vecs = extract_vectors(net, paths, image_size, transform, ms=ms, msp=msp)
+        vecs = extract_vectors(net, paths, image_size, transform, ms=ms, msp=msp, setup_network=False)
 
     # convert to numpy
     return vecs.numpy()
