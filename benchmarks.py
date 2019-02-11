@@ -22,7 +22,7 @@ from cirtorch.examples.test import (
 from score_retrieval.data import indices_with_label
 
 
-def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10):
+def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10, setup_network=True):
     """Extract vectors from images given as a pytorch array."""
     # convert images to pytorch
     proc_images = []
@@ -30,8 +30,9 @@ def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10):
         proc_images.append(torch.from_numpy(image))
 
     # moving network to gpu and eval mode
-    net.cuda()
-    net.eval()
+    if setup_network:
+        net.cuda()
+        net.eval()
 
     # creating dataset loader
     loader = torch.utils.data.DataLoader(
@@ -63,6 +64,7 @@ def call_benchmark(
     network="retrievalSfM120k-resnet101-gem",
     offtheshelf=False,
     image_size=1024,
+    gpu=False,
 ):
     """Run the given network on the given data and return vectors for it."""
     # load network
@@ -76,7 +78,8 @@ def call_benchmark(
     msp = 1
 
     # moving network to gpu and eval mode
-    net.cuda()
+    if gpu:
+        net.cuda()
     net.eval()
 
     # set up the transform
@@ -91,7 +94,7 @@ def call_benchmark(
 
     # process the given data
     if images is not None:
-        vecs = vectors_from_images(net, np.asarray(images), transform, ms=ms, msp=msp)
+        vecs = vectors_from_images(net, np.asarray(images), transform, ms=ms, msp=msp, setup_network=False)
     else:
         vecs = extract_vectors(net, paths, image_size, transform, ms=ms, msp=msp)
 
