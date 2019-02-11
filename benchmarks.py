@@ -50,8 +50,8 @@ def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10):
             vecs[:, i] = extract_ms(net, input_var, ms, msp)
 
         if (i+1) % print_freq == 0 or (i+1) == len(proc_images):
-            print('\r>>>> {}/{} done...'.format((i+1), len(proc_images)), end='')
-    print('')
+            print('{}/{}...'.format((i+1), len(proc_images)), end='')
+    print('done')
     return vecs
 
 
@@ -97,6 +97,4 @@ def call_benchmark(
         vecs = extract_vectors(net, paths, image_size, transform, ms=ms, msp=msp)
 
     # convert to numpy
-    vecs = vecs.numpy()
-
-    return vecs
+    return vecs.numpy()
