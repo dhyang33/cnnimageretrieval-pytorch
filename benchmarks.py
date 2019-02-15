@@ -58,6 +58,9 @@ def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10, se
     return vecs
 
 
+LOADED_NETWORKS = {}
+
+
 def call_benchmark(
     # must pass one of images or paths
     images=None,
@@ -69,20 +72,29 @@ def call_benchmark(
     gpu=True,
 ):
     """Run the given network on the given data and return vectors for it."""
-    # load network
-    if offtheshelf:
-        net = load_offtheshelf(network)
+    net_key = (network, offtheshelf, gpu)
+
+    if net_key in LOADED_NETWORKS:
+        net = LOADED_NETWORKS[net_key]
+
     else:
-        net = load_network(network)
+        # load network
+        if offtheshelf:
+            net = load_offtheshelf(network)
+        else:
+            net = load_network(network)
+
+        # moving network to gpu and eval mode
+        if gpu:
+            net.cuda()
+        net.eval()
+
+        # store network in memo dict
+        LOADED_NETWORKS[net_key] = net
 
     # setting up the multi-scale parameters
     ms = [1]
     msp = 1
-
-    # moving network to gpu and eval mode
-    if gpu:
-        net.cuda()
-    net.eval()
 
     # set up the transform
     normalize = transforms.Normalize(
