@@ -158,10 +158,11 @@ def init_network(model='resnet101', pooling='gem', whitening=False, mean=[0.485,
     return net
 
 
-def extract_vectors(net, images, image_size, transform, bbxs=None, ms=[1], msp=1, print_freq=10, setup_network=True):
+def extract_vectors(net, images, image_size, transform, bbxs=None, ms=[1], msp=1, print_freq=10, setup_network=True, gpu=True):
     # moving network to gpu and eval mode
     if setup_network:
-        net.cuda()
+        if gpu:
+            net.cuda()
         net.eval()
 
     # creating dataset loader
@@ -172,8 +173,10 @@ def extract_vectors(net, images, image_size, transform, bbxs=None, ms=[1], msp=1
 
     # extracting vectors
     vecs = torch.zeros(net.meta['outputdim'], len(images))
-    for i, input in enumerate(loader):
-        input_var = Variable(input.cuda())
+    for i, input_data in enumerate(loader):
+        if gpu:
+            input_data.cuda()
+        input_var = Variable(input_data)
 
         if len(ms) == 1:
             vecs[:, i] = extract_ss(net, input_var)

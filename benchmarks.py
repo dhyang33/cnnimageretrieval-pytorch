@@ -22,11 +22,12 @@ from cirtorch.examples.test import (
 from score_retrieval.data import indices_with_label
 
 
-def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10, setup_network=True):
+def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10, setup_network=True, gpu=True):
     """Extract vectors from images given as a pytorch array."""
     # moving network to gpu and eval mode
     if setup_network:
-        net.cuda()
+        if gpu:
+            net.cuda()
         net.eval()
 
     # creating dataset loader
@@ -37,8 +38,14 @@ def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10, se
 
     # extracting vectors
     vecs = torch.zeros(net.meta['outputdim'], len(images))
-    for i, input in enumerate(loader):
-        input_var = Variable(input.cuda())
+    for i, input_data in enumerate(loader):
+        if gpu:
+            input_data.cuda()
+        input_var = Variable(input_data)
+
+        # fix tensor shape
+        if len(input_var.shape) > 4 and input_var.shape[0] == 1:
+            input_var = input_var[0]
 
         if len(ms) == 1:
             vecs[:, i] = extract_ss(net, input_var)
@@ -56,10 +63,10 @@ def call_benchmark(
     images=None,
     paths=None,
 
-    network="retrievalSfM120k-resnet101-gem",
+    network="retrievalSfM120k-vgg16-gem",
     offtheshelf=False,
     image_size=1024,
-    gpu=False,
+    gpu=True,
 ):
     """Run the given network on the given data and return vectors for it."""
     # load network
@@ -89,9 +96,9 @@ def call_benchmark(
 
     # process the given data
     if images is not None:
-        vecs = vectors_from_images(net, np.asarray(images), transform, ms=ms, msp=msp, setup_network=False)
+        vecs = vectors_from_images(net, np.asarray(images), transform, ms=ms, msp=msp, setup_network=False, gpu=gpu)
     else:
-        vecs = extract_vectors(net, paths, image_size, transform, ms=ms, msp=msp, setup_network=False)
+        vecs = extract_vectors(net, paths, image_size, transform, ms=ms, msp=msp, setup_network=False, gpu=gpu)
 
     # convert to numpy
     return vecs.numpy()
