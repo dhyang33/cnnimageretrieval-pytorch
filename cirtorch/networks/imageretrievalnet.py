@@ -175,7 +175,7 @@ def extract_vectors(net, images, image_size, transform, bbxs=None, ms=[1], msp=1
     vecs = torch.zeros(net.meta['outputdim'], len(images))
     for i, input_data in enumerate(loader):
         if gpu:
-            input_data.cuda()
+            input_data = input_data.cuda()
         input_var = Variable(input_data)
 
         if len(ms) == 1:

@@ -40,7 +40,7 @@ def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10, se
     vecs = torch.zeros(net.meta['outputdim'], len(images))
     for i, input_data in enumerate(loader):
         if gpu:
-            input_data.cuda()
+            input_data = input_data.cuda()
         input_var = Variable(input_data)
 
         # fix tensor shape
