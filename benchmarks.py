@@ -115,6 +115,6 @@ def call_benchmark(
         vecs = extract_vectors(net, paths, image_size, transform, ms=ms, msp=msp, setup_network=False, gpu=gpu)
 
     # convert to numpy
-    np_vecs = vecs.numpy()
+    np_vecs = vecs.numpy().T
     print("np_vecs.shape =", np_vecs.shape)
     return np_vecs
