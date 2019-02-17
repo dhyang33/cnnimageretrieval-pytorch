@@ -55,3 +55,7 @@ resnet-spoc:
 .PHONY: vgg-spoc
 vgg-spoc:
 	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'vgg16-spoc' --multiscale --datasets 'scores'
+
+.PHONY: train-example-vgg-gem
+train-example-vgg-gem:
+	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'retrieval-SfM-120k' --arch 'vgg16' --pool 'gem' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000 --pool-size=20000 --batch-size 5 --image-size 362
