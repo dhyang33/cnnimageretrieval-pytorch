@@ -90,7 +90,7 @@ def load_offtheshelf(network_name):
     else:
         offtheshelf_whiten = False
 
-    print(">> Loading off-the-shelf network:\n>>>> '{}'".format(args.network_offtheshelf))
+    print(">> Loading off-the-shelf network:\n>>>> '{}'".format(network_name))
     net = init_network(model=offtheshelf[0], pooling=offtheshelf[1], whitening=offtheshelf_whiten)
 
     print(">>>> loaded network: ")

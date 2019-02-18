@@ -3,12 +3,12 @@
 This is a Python toolbox that implements the training and testing of the approach described in our papers:
 
 
-**Fine-tuning CNN Image Retrieval with No Human Annotation**,  
-Radenović F., Tolias G., Chum O., 
+**Fine-tuning CNN Image Retrieval with No Human Annotation**,
+Radenović F., Tolias G., Chum O.,
 TPAMI 2018 [[arXiv](https://arxiv.org/abs/1711.02512)]
 
-**CNN Image Retrieval Learns from BoW: Unsupervised Fine-Tuning with Hard Examples**,  
-Radenović F., Tolias G., Chum O., 
+**CNN Image Retrieval Learns from BoW: Unsupervised Fine-Tuning with Hard Examples**,
+Radenović F., Tolias G., Chum O.,
 ECCV 2016 [[arXiv](http://arxiv.org/abs/1604.02426)]
 
 
@@ -56,19 +56,19 @@ python3 -m cirtorch.examples.train.py -h
 
 For example, to train our best network described in the TPAMI 2018 paper run the following command. After each epoch, the fine-tuned network will be tested on the revisited Oxford and Paris benchmarks:
 ```
-python3 -m cirtorch.examples.train YOUR_EXPORT_DIR --gpu-id '0' --training-dataset 'retrieval-SfM-120k' 
-            --test-datasets 'roxford5k,rparis6k' --arch 'resnet101' --pool 'gem' --loss 'contrastive' 
-            --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000 
+python3 -m cirtorch.examples.train YOUR_EXPORT_DIR --gpu-id '0' --training-dataset 'retrieval-SfM-120k'
+            --test-datasets 'roxford5k,rparis6k' --arch 'resnet101' --pool 'gem' --loss 'contrastive'
+            --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000
             --pool-size=20000 --batch-size 5 --image-size 362
 ```
 
 Networks can be evaluated with learned whitening after each epoch. To achieve this run the following command. Note that this will significantly slow down the entire training procedure, and you can evaluate networks with learned whitening later on using the example test script.
 
 ```
-python3 -m cirtorch.examples.train YOUR_EXPORT_DIR --gpu-id '0' --training-dataset 'retrieval-SfM-120k' 
-            --test-datasets 'roxford5k,rparis6k' --test-whiten 'retrieval-SfM-30k' 
-            --arch 'resnet101' --pool 'gem' --loss 'contrastive' --loss-margin 0.85 
-            --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000 --pool-size=20000 
+python3 -m cirtorch.examples.train YOUR_EXPORT_DIR --gpu-id '0' --training-dataset 'retrieval-SfM-120k'
+            --test-datasets 'roxford5k,rparis6k' --test-whiten 'retrieval-SfM-30k'
+            --arch 'resnet101' --pool 'gem' --loss 'contrastive' --loss-margin 0.85
+            --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000 --pool-size=20000
             --batch-size 5 --image-size 362
 ```
 
@@ -93,14 +93,14 @@ python3 -m cirtorch.examples.test.py -h
 
 We provide the pretrained networks trained using the same parameters as in our TPAMI 2018 paper, with precomputed whitening. To evaluate them run:
 ```
-python3 -m cirtorch.examples.test --gpu-id '0' --network-path 'retrievalSfM120k-resnet101-gem' 
-                --datasets 'oxford5k,paris6k,roxford5k,rparis6k' 
+python3 -m cirtorch.examples.test --gpu-id '0' --network-path 'retrievalSfM120k-resnet101-gem'
+                --datasets 'oxford5k,paris6k,roxford5k,rparis6k'
                 --whitening 'retrieval-SfM-120k' --multiscale
 ```
 or
 ```
-python3 -m cirtorch.examples.test --gpu-id '0' --network-path 'retrievalSfM120k-vgg16-gem' 
-                --datasets 'oxford5k,paris6k,roxford5k,rparis6k' 
+python3 -m cirtorch.examples.test --gpu-id '0' --network-path 'retrievalSfM120k-vgg16-gem'
+                --datasets 'oxford5k,paris6k,roxford5k,rparis6k'
                 --whitening 'retrieval-SfM-120k' --multiscale
 ```
 Performance comparison with the networks used in the paper, trained with our [CNN Image Retrieval in MatConvNet](https://github.com/filipradenovic/cnnimageretrieval):
@@ -117,13 +117,13 @@ Performance comparison with the networks used in the paper, trained with our [CN
 
 To evaluate your trained network using single scale and without learning whitening:
 ```
-python3 -m cirtorch.examples.test --gpu-id '0' --network-path YOUR_NETWORK_PATH 
+python3 -m cirtorch.examples.test --gpu-id '0' --network-path YOUR_NETWORK_PATH
                 --datasets 'oxford5k,paris6k,roxford5k,rparis6k'
 ```
 
 To evaluate trained network using multi scale evaluation and with learned whitening as post-processing:
 ```
-python3 -m cirtorch.examples.test --gpu-id '0' --network-path YOUR_NETWORK_PATH 
+python3 -m cirtorch.examples.test --gpu-id '0' --network-path YOUR_NETWORK_PATH
                 --datasets 'oxford5k,paris6k,roxford5k,rparis6k'
                 --whitening 'retrieval-SfM-120k' --multiscale
 ```
@@ -142,7 +142,7 @@ python3 -m cirtorch.examples.test --gpu-id '0' --network-offtheshelf 'resnet101-
 
 ## Related publications
 
-### Training (fine-tuning) convolutional neural networks 
+### Training (fine-tuning) convolutional neural networks
 ```
 @article{RTC18,
  title = {Fine-tuning {CNN} Image Retrieval with No Human Annotation},
