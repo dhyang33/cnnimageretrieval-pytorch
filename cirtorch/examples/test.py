@@ -228,6 +228,7 @@ def main():
         # convert to numpy
         vecs = vecs.numpy()
         qvecs = qvecs.numpy()
+        print(">> {}: qvecs.shape: {}".format(dataset, qvecs.shape))
 
         # search, rank, and print
         scores = np.dot(vecs.T, qvecs)
