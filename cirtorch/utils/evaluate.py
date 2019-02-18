@@ -65,7 +65,7 @@ def compute_acc(ranks, gnd, dataset=None):
                 correct += 1
     acc = correct/total
     if dataset is not None:
-        print('>> {}: acc {:.2f}'.format(dataset, np.around(acc, decimals=4)))
+        print('>> {}: acc {:.2f} ({}/{})'.format(dataset, np.around(acc, decimals=4), correct, total))
     return acc
 
 
