@@ -1,3 +1,5 @@
+from __future__ import division
+
 import os
 
 import torch
@@ -70,6 +72,7 @@ def call_benchmark(
     offtheshelf=False,
     image_size=1024,
     gpu=True,
+    multiscale=True,
 ):
     """Run the given network on the given data and return vectors for it."""
     net_key = (network, offtheshelf, gpu)
@@ -95,6 +98,10 @@ def call_benchmark(
     # setting up the multi-scale parameters
     ms = [1]
     msp = 1
+    if multiscale:
+        ms = [1, 1/np.sqrt(2), 1/2]
+        if net.meta['pooling'] == 'gem' and net.whiten is None:
+            msp = net.pool.p.data.tolist()[0]
 
     # set up the transform
     normalize = transforms.Normalize(

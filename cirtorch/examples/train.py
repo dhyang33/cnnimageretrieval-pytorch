@@ -41,18 +41,18 @@ parser = argparse.ArgumentParser(description='PyTorch CNN Image Retrieval Traini
 parser.add_argument('directory', metavar='DIR',
                     help='destination where trained network should be saved')
 parser.add_argument('--training-dataset', '-d', metavar='DATASET', default='retrieval-SfM-120k', choices=training_dataset_names,
-                    help='training dataset: ' + 
+                    help='training dataset: ' +
                         ' | '.join(training_dataset_names) +
                         ' (default: retrieval-SfM-120k)')
 parser.add_argument('--no-val', dest='val', action='store_false',
                     help='do not run validation')
 parser.add_argument('--test-datasets', '-td', metavar='DATASETS', default='oxford5k,paris6k', choices=test_datasets_names,
-                    help='comma separated list of test datasets: ' + 
-                        ' | '.join(test_datasets_names) + 
+                    help='comma separated list of test datasets: ' +
+                        ' | '.join(test_datasets_names) +
                         ' (default: oxford5k,paris6k)')
 parser.add_argument('--test-whiten', metavar='DATASET', default='', choices=test_whiten_names,
-                    help='dataset used to learn whitening for testing: ' + 
-                        ' | '.join(test_whiten_names) + 
+                    help='dataset used to learn whitening for testing: ' +
+                        ' | '.join(test_whiten_names) +
                         ' (default: None)')
 
 # network architecture and initialization options
@@ -93,7 +93,7 @@ parser.add_argument('--workers', '-j', default=8, type=int, metavar='N',
                     help='number of data loading workers (default: 8)')
 parser.add_argument('--epochs', default=100, type=int, metavar='N',
                     help='number of total epochs to run (default: 100)')
-parser.add_argument('--batch-size', '-b', default=5, type=int, metavar='N', 
+parser.add_argument('--batch-size', '-b', default=5, type=int, metavar='N',
                     help='number of (q,p,n1,...,nN) tuples in a mini-batch (default: 5)')
 parser.add_argument('--optimizer', '-o', metavar='OPTIMIZER', default='adam',
                     choices=optimizer_names,
@@ -142,7 +142,7 @@ def main():
 
     # set cuda visible device
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_id
-    
+
     # set random seeds (maybe pass as argument)
     torch.manual_seed(0)
     torch.cuda.manual_seed_all(0)
@@ -413,8 +413,8 @@ def test(datasets, net):
         # extract whitening vectors
         print('>> {}: Extracting...'.format(args.test_whiten))
         wvecs = extract_vectors(net, images, image_size, transform)
-        
-        # learning whitening 
+
+        # learning whitening
         print('>> {}: Learning...'.format(args.test_whiten))
         wvecs = wvecs.numpy()
         m, P = whitenlearn(wvecs, db['qidxs'], db['pidxs'])
@@ -426,7 +426,7 @@ def test(datasets, net):
 
     # evaluate on test datasets
     datasets = args.test_datasets.split(',')
-    for dataset in datasets: 
+    for dataset in datasets:
         start = time.time()
 
         print('>> {}: Extracting...'.format(dataset))
@@ -436,13 +436,13 @@ def test(datasets, net):
         images = [cfg['im_fname'](cfg,i) for i in range(cfg['n'])]
         qimages = [cfg['qim_fname'](cfg,i) for i in range(cfg['nq'])]
         bbxs = [tuple(cfg['gnd'][i]['bbx']) for i in range(cfg['nq'])]
-        
+
         # extract database and query vectors
         print('>> {}: database images...'.format(dataset))
         vecs = extract_vectors(net, images, image_size, transform)
         print('>> {}: query images...'.format(dataset))
         qvecs = extract_vectors(net, qimages, image_size, transform, bbxs)
-        
+
         print('>> {}: Evaluating...'.format(dataset))
 
         # convert to numpy
@@ -453,7 +453,7 @@ def test(datasets, net):
         scores = np.dot(vecs.T, qvecs)
         ranks = np.argsort(-scores, axis=0)
         compute_map_and_print(dataset, ranks, cfg['gnd'])
-    
+
         if Lw is not None:
             # whiten the vectors
             vecs_lw  = whitenapply(vecs, Lw['m'], Lw['P'])
@@ -463,7 +463,7 @@ def test(datasets, net):
             scores = np.dot(vecs_lw.T, qvecs_lw)
             ranks = np.argsort(-scores, axis=0)
             compute_map_and_print(dataset + ' + whiten', ranks, cfg['gnd'])
-        
+
         print('>> {}: elapsed time: {}'.format(dataset, htime(time.time()-start)))
 
 
