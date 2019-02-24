@@ -103,6 +103,7 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# data and weights dirs
+# temp dirs
 data/
 weights/
+logs/
