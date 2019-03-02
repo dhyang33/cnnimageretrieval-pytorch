@@ -3,7 +3,7 @@ import os
 def download_test(data_dir):
     """
     DOWNLOAD_TEST Checks, and, if required, downloads the necessary datasets for the testing.
-      
+
         download_test(DATA_ROOT) checks if the data necessary for running the example script exist.
         If not it downloads it in the folder structure:
             DATA_ROOT/test/oxford5k/  : folder with Oxford images and ground truth file
@@ -15,7 +15,7 @@ def download_test(data_dir):
     # Create data folder if it does not exist
     if not os.path.isdir(data_dir):
         os.mkdir(data_dir)
-    
+
     # Create datasets folder if it does not exist
     datasets_dir = os.path.join(data_dir, 'test')
     if not os.path.isdir(datasets_dir):
@@ -72,7 +72,10 @@ def download_test(data_dir):
                 print('>> Dataset {} directory does not exist. Creating: {}'.format(dataset, dst_dir))
                 dataset_old = dataset[1:]
                 dst_dir_old = os.path.join(datasets_dir, dataset_old, 'jpg')
-                os.mkdir(os.path.join(datasets_dir, dataset))
+                try:
+                    os.mkdir(os.path.join(datasets_dir, dataset))
+                except FileExistsError:
+                    pass
                 os.system('ln -s {} {}'.format(dst_dir_old, dst_dir))
                 print('>> Created symbolic link from {} jpg to {} jpg'.format(dataset_old, dataset))
 
@@ -90,7 +93,7 @@ def download_test(data_dir):
 def download_train(data_dir):
     """
     DOWNLOAD_TRAIN Checks, and, if required, downloads the necessary datasets for the training.
-      
+
         download_train(DATA_ROOT) checks if the data necessary for running the example script exist.
         If not it downloads it in the folder structure:
             DATA_ROOT/train/retrieval-SfM-120k/  : folder with rsfm120k images and db files
@@ -100,7 +103,7 @@ def download_train(data_dir):
     # Create data folder if it does not exist
     if not os.path.isdir(data_dir):
         os.mkdir(data_dir)
-    
+
     # Create datasets folder if it does not exist
     datasets_dir = os.path.join(data_dir, 'train')
     if not os.path.isdir(datasets_dir):
@@ -122,11 +125,14 @@ def download_train(data_dir):
         print('>> Extracted, deleting {}...'.format(dst_file))
         os.system('rm {}'.format(dst_file))
 
-    # Create symlink for train/retrieval-SfM-30k/ 
+    # Create symlink for train/retrieval-SfM-30k/
     dst_dir_old = os.path.join(datasets_dir, 'retrieval-SfM-120k', 'ims')
     dst_dir = os.path.join(datasets_dir, 'retrieval-SfM-30k', 'ims')
     if not os.path.isdir(dst_dir):
-        os.makedirs(os.path.join(datasets_dir, 'retrieval-SfM-30k'))
+        try:
+            os.makedirs(os.path.join(datasets_dir, 'retrieval-SfM-30k'))
+        except FileExistsError:
+            pass
         os.system('ln -s {} {}'.format(dst_dir_old, dst_dir))
         print('>> Created symbolic link from retrieval-SfM-120k/ims to retrieval-SfM-30k/ims')
 

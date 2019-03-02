@@ -187,10 +187,13 @@ def main():
 
         if dataset == "scores":
             # Special added logic to handle loading our score dataset
-            from score_retrieval.data import index_data, indices_with_label
-
-            images, image_labels, qimages, qimage_labels = index_data()
-            gnd = [{"ok": indices_with_label(label, image_labels), "junk": []} for label in qimage_labels]
+            from score_retrieval.exports import (
+                images,
+                image_labels,
+                qimages,
+                qimage_labels,
+                gnd,
+            )
 
             print('>> {}: database images...'.format(dataset))
             vecs = extract_vectors(net, images, args.image_size, transform, ms=ms, msp=msp)

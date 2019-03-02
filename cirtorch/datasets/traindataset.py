@@ -11,7 +11,7 @@ from cirtorch.datasets.genericdataset import ImagesFromList
 from cirtorch.utils.general import get_data_root
 
 class TuplesDataset(data.Dataset):
-    """Data loader that loads training and validation tuples of 
+    """Data loader that loads training and validation tuples of
         Radenovic etal ECCV16: CNN image retrieval learns from BoW
 
     Args:
@@ -36,7 +36,7 @@ class TuplesDataset(data.Dataset):
         nidxs (list): List of qsize tuples of negative images
                         Each nidxs tuple contains nnum images corresponding to query image at the same position in qidxs
 
-        Lists qidxs, pidxs, nidxs are refreshed by calling the ``create_epoch_tuples()`` method, 
+        Lists qidxs, pidxs, nidxs are refreshed by calling the ``create_epoch_tuples()`` method,
             ie new q-p pairs are picked and negative images are remined
     """
 
@@ -63,8 +63,11 @@ class TuplesDataset(data.Dataset):
         self.clusters = db['cluster']
         self.qpool = db['qidxs']
         self.ppool = db['pidxs']
+        print("cluster:", self.clusters)
+        print("qpool:", self.qpool)
+        print("ppool:", self.ppool)
 
-        ## If we want to keep only unique q-p pairs 
+        ## If we want to keep only unique q-p pairs
         ## However, ordering of pairs will change, although that is not important
         # qpidxs = list(set([(self.qidxs[i], self.pidxs[i]) for i in range(len(self.qidxs))]))
         # self.qidxs = [qpidxs[i][0] for i in range(len(qpidxs))]
@@ -103,7 +106,7 @@ class TuplesDataset(data.Dataset):
 
         if self.imsize is not None:
             output = [imresize(img, self.imsize) for img in output]
-        
+
         if self.transform is not None:
             output = [self.transform(output[i]).unsqueeze_(0) for i in range(len(output))]
 
