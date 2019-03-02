@@ -63,9 +63,9 @@ class TuplesDataset(data.Dataset):
         self.clusters = db['cluster']
         self.qpool = db['qidxs']
         self.ppool = db['pidxs']
-        print("cluster:", repr(self.clusters)[1000:])
-        print("qpool:", repr(self.qpool)[1000:])
-        print("ppool:", repr(self.ppool)[1000:])
+        print("cluster:", repr(self.clusters)[:1000])
+        print("qpool:", repr(self.qpool)[:1000])
+        print("ppool:", repr(self.ppool)[:1000])
 
         ## If we want to keep only unique q-p pairs
         ## However, ordering of pairs will change, although that is not important
