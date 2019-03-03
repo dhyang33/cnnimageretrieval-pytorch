@@ -305,7 +305,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
                 input_var = torch.autograd.Variable(input[q][imi].cuda())
 
                 # compute output
-                output[:, imi] = model(input_var)
+                output[:, imi] = torch.squeeze(model(input_var))
 
             # compute loss for this batch and do backward pass for a batch
             # each backward pass gradients will be accumulated
@@ -356,7 +356,7 @@ def validate(val_loader, model, criterion, epoch):
                 input_var = torch.autograd.Variable(input[q][imi].cuda())
 
                 # compute output
-                output[:, q*ni + imi] = model(input_var)
+                output[:, q*ni + imi] = torch.squeeze(model(input_var))
 
         target_var = torch.autograd.Variable(torch.cat(target).cuda())
         loss = criterion(output, target_var)
