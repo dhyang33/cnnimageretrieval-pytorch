@@ -189,9 +189,7 @@ def main():
             # Special added logic to handle loading our score dataset
             from score_retrieval.exports import (
                 images,
-                image_labels,
                 qimages,
-                qimage_labels,
                 gnd,
             )
 

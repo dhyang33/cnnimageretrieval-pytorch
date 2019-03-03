@@ -24,8 +24,8 @@ from cirtorch.utils.whiten import whitenlearn, whitenapply
 from cirtorch.utils.evaluate import compute_map_and_print
 from cirtorch.utils.general import get_data_root, htime
 
-training_dataset_names = ['retrieval-SfM-120k']
-test_datasets_names = ['oxford5k,paris6k', 'roxford5k,rparis6k', 'oxford5k,paris6k,roxford5k,rparis6k']
+training_dataset_names = ['retrieval-SfM-120k', 'scores']
+test_datasets_names = ['oxford5k,paris6k', 'roxford5k,rparis6k', 'oxford5k,paris6k,roxford5k,rparis6k', 'scores']
 test_whiten_names = ['retrieval-SfM-30k', 'retrieval-SfM-120k']
 
 model_names = sorted(name for name in models.__dict__
@@ -431,17 +431,31 @@ def test(datasets, net):
 
         print('>> {}: Extracting...'.format(dataset))
 
-        # prepare config structure for the test dataset
-        cfg = configdataset(dataset, os.path.join(get_data_root(), 'test'))
-        images = [cfg['im_fname'](cfg,i) for i in range(cfg['n'])]
-        qimages = [cfg['qim_fname'](cfg,i) for i in range(cfg['nq'])]
-        bbxs = [tuple(cfg['gnd'][i]['bbx']) for i in range(cfg['nq'])]
+        if dataset == "scores":
+            # Special added logic to handle loading our score dataset
+            from score_retrieval.exports import (
+                cfg,
+                images,
+                qimages,
+            )
 
-        # extract database and query vectors
-        print('>> {}: database images...'.format(dataset))
-        vecs = extract_vectors(net, images, image_size, transform)
-        print('>> {}: query images...'.format(dataset))
-        qvecs = extract_vectors(net, qimages, image_size, transform, bbxs)
+            print('>> {}: database images...'.format(dataset))
+            vecs = extract_vectors(net, images, args.image_size, transform)
+            print('>> {}: query images...'.format(dataset))
+            qvecs = extract_vectors(net, qimages, args.image_size, transform)
+
+        else:
+            # prepare config structure for the test dataset
+            cfg = configdataset(dataset, os.path.join(get_data_root(), 'test'))
+            images = [cfg['im_fname'](cfg,i) for i in range(cfg['n'])]
+            qimages = [cfg['qim_fname'](cfg,i) for i in range(cfg['nq'])]
+            bbxs = [tuple(cfg['gnd'][i]['bbx']) for i in range(cfg['nq'])]
+
+            # extract database and query vectors
+            print('>> {}: database images...'.format(dataset))
+            vecs = extract_vectors(net, images, image_size, transform)
+            print('>> {}: query images...'.format(dataset))
+            qvecs = extract_vectors(net, qimages, image_size, transform, bbxs)
 
         print('>> {}: Evaluating...'.format(dataset))
 

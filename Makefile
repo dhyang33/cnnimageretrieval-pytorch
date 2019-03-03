@@ -73,3 +73,8 @@ vgg-spoc:
 .PHONY: train-example-vgg-gem
 train-example-vgg-gem:
 	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'retrieval-SfM-120k' --test-datasets 'roxford5k,rparis6k' --arch 'vgg16' --pool 'gem' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000 --pool-size=20000 --batch-size 5 --image-size 362
+
+.PHONY: train-vgg-gem
+train-vgg-gem:
+	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'scores' --test-datasets 'scores' --arch 'vgg16' --pool 'gem' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000 --pool-size=20000 --batch-size 5 --image-size 362
+

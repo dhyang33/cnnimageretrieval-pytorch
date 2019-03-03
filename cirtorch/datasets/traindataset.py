@@ -45,21 +45,30 @@ class TuplesDataset(data.Dataset):
         if not (mode == 'train' or mode == 'val'):
             raise(RuntimeError("MODE should be either train or val, passed as string"))
 
-        # setting up paths
-        data_root = get_data_root()
-        db_root = os.path.join(data_root, 'train', name)
-        ims_root = os.path.join(db_root, 'ims')
+        if name == "scores":
+            # special logic for scores database
+            from score_retrieval.exports import db
 
-        # loading db
-        db_fn = os.path.join(db_root, '{}.pkl'.format(name))
-        with open(db_fn, 'rb') as f:
-            db = pickle.load(f)[mode]
+        else:
+            # setting up paths
+            data_root = get_data_root()
+            db_root = os.path.join(data_root, 'train', name)
+            ims_root = os.path.join(db_root, 'ims')
+
+            # loading db
+            db_fn = os.path.join(db_root, '{}.pkl'.format(name))
+            with open(db_fn, 'rb') as f:
+                db = pickle.load(f)[mode]
 
         # initializing tuples dataset
         self.name = name
         self.mode = mode
         self.imsize = imsize
-        self.images = [cid2filename(db['cids'][i], ims_root) for i in range(len(db['cids']))]
+        if name == "scores":
+            from score_retrieval.exports import train_images
+            self.images = train_images
+        else:
+            self.images = [cid2filename(db['cids'][i], ims_root) for i in range(len(db['cids']))]
         self.clusters = db['cluster']
         self.qpool = db['qidxs']
         self.ppool = db['pidxs']
