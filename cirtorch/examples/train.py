@@ -215,6 +215,7 @@ def main():
         poolsize=args.pool_size,
         transform=transform
     )
+    train_dataset.create_epoch_tuples(model)
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=args.batch_size, shuffle=True,
         num_workers=args.workers, pin_memory=True, sampler=None,
@@ -230,6 +231,7 @@ def main():
             poolsize=float('Inf'),
             transform=transform
         )
+        val_dataset.create_epoch_tuples(model)
         val_loader = torch.utils.data.DataLoader(
             val_dataset, batch_size=args.batch_size, shuffle=False,
             num_workers=args.workers, pin_memory=True,
