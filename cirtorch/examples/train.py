@@ -26,7 +26,7 @@ from cirtorch.utils.general import get_data_root, htime
 
 training_dataset_names = ['retrieval-SfM-120k', 'scores']
 test_datasets_names = ['oxford5k,paris6k', 'roxford5k,rparis6k', 'oxford5k,paris6k,roxford5k,rparis6k', 'scores']
-test_whiten_names = ['retrieval-SfM-30k', 'retrieval-SfM-120k']
+test_whiten_names = ['retrieval-SfM-30k', 'retrieval-SfM-120k', 'scores']
 
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
@@ -402,13 +402,21 @@ def test(datasets, net):
 
         print('>> {}: Learning whitening...'.format(args.test_whiten))
 
-        # loading db
-        db_root = os.path.join(get_data_root(), 'train', args.test_whiten)
-        ims_root = os.path.join(db_root, 'ims')
-        db_fn = os.path.join(db_root, '{}-whiten.pkl'.format(args.test_whiten))
-        with open(db_fn, 'rb') as f:
-            db = pickle.load(f)
-        images = [cid2filename(db['cids'][i], ims_root) for i in range(len(db['cids']))]
+        if args.whitening == "scores":
+            # special logic for scores database
+            from score_retrieval.exports import (
+                db,
+                train_images as images,
+            )
+
+        else:
+            # loading db
+            db_root = os.path.join(get_data_root(), 'train', args.test_whiten)
+            ims_root = os.path.join(db_root, 'ims')
+            db_fn = os.path.join(db_root, '{}-whiten.pkl'.format(args.test_whiten))
+            with open(db_fn, 'rb') as f:
+                db = pickle.load(f)
+            images = [cid2filename(db['cids'][i], ims_root) for i in range(len(db['cids']))]
 
         # extract whitening vectors
         print('>> {}: Extracting...'.format(args.test_whiten))

@@ -25,8 +25,8 @@ PRETRAINED = {
     'retrievalSfM120k-resnet101-gem'    : 'http://cmp.felk.cvut.cz/cnnimageretrieval/data/networks/retrieval-SfM-120k/retrievalSfM120k-resnet101-gem-b80fb85.pth',
 }
 
-datasets_names = ['oxford5k,paris6k', 'roxford5k,rparis6k', 'oxford5k,paris6k,roxford5k,rparis6k']
-whitening_names = ['retrieval-SfM-30k', 'retrieval-SfM-120k']
+datasets_names = ['oxford5k,paris6k', 'roxford5k,rparis6k', 'oxford5k,paris6k,roxford5k,rparis6k', 'scores']
+whitening_names = ['retrieval-SfM-30k', 'retrieval-SfM-120k', 'scores']
 
 parser = argparse.ArgumentParser(description='PyTorch CNN Image Retrieval Testing')
 
@@ -156,13 +156,21 @@ def main():
 
             print('>> {}: Learning whitening...'.format(args.whitening))
 
-            # loading db
-            db_root = os.path.join(get_data_root(), 'train', args.whitening)
-            ims_root = os.path.join(db_root, 'ims')
-            db_fn = os.path.join(db_root, '{}-whiten.pkl'.format(args.whitening))
-            with open(db_fn, 'rb') as f:
-                db = pickle.load(f)
-            images = [cid2filename(db['cids'][i], ims_root) for i in range(len(db['cids']))]
+            if args.whitening == "scores":
+                # special logic for scores database
+                from score_retrieval.exports import (
+                    db,
+                    train_images as images,
+                )
+
+            else:
+                # loading db
+                db_root = os.path.join(get_data_root(), 'train', args.test_whiten)
+                ims_root = os.path.join(db_root, 'ims')
+                db_fn = os.path.join(db_root, '{}-whiten.pkl'.format(args.test_whiten))
+                with open(db_fn, 'rb') as f:
+                    db = pickle.load(f)
+                images = [cid2filename(db['cids'][i], ims_root) for i in range(len(db['cids']))]
 
             # extract whitening vectors
             print('>> {}: Extracting...'.format(args.whitening))
@@ -250,7 +258,9 @@ def main():
             # search, rank, and print
             scores = np.dot(vecs_lw.T, qvecs_lw)
             ranks = np.argsort(-scores, axis=0)
-            compute_map_and_print(dataset + ' + whiten', ranks, gnd)
+            compute_acc(ranks, gnd, dataset + " + whiten")
+            compute_map_and_print(dataset + " + whiten", ranks, gnd)
+            compute_mrr(ranks, gnd, dataset + " + whiten")
 
         print('>> {}: elapsed time: {}'.format(dataset, htime(time.time()-start)))
 
