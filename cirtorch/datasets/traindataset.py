@@ -101,7 +101,7 @@ class TuplesDataset(data.Dataset):
         Returns:
             images tuple (q,p,n1,...,nN): Loaded train/val tuple at index of self.qidxs
         """
-        if self.__len__() == 0:
+        if not self.qidxs:
             raise(RuntimeError("List qidxs is empty. Run ``dataset.create_epoch_tuples(net)`` method to create subset for train/val!"))
 
         output = []
@@ -125,7 +125,7 @@ class TuplesDataset(data.Dataset):
 
     def __len__(self):
         if not self.qidxs:
-            return 0
+            return 1  # torch will complain if we say the dataset is empty
         return len(self.qidxs)
 
     def __repr__(self):
