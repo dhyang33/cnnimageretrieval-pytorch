@@ -311,7 +311,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
             # each backward pass gradients will be accumulated
             target_var = torch.autograd.Variable(target[q].cuda())
             loss = criterion(output, target_var)
-            losses.update(loss.data[0])
+            losses.update(loss.item())
             loss.backward()
 
         # do one step for multiple batches
@@ -362,7 +362,7 @@ def validate(val_loader, model, criterion, epoch):
         loss = criterion(output, target_var)
 
         # record loss
-        losses.update(loss.data[0]/nq, nq)
+        losses.update(loss.item()/nq, nq)
 
         # measure elapsed time
         batch_time.update(time.time() - end)
