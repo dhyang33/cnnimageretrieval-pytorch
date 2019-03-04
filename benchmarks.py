@@ -74,7 +74,7 @@ def call_benchmark(
     image_size=1024,
     gpu=True,
     multiscale=True,
-    whitening=None,
+    whitening="retrievalSfM120k",
 ):
     """Run the given network on the given data and return vectors for it."""
     net_key = (network, offtheshelf, gpu)
