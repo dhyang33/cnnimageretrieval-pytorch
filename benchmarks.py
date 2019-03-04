@@ -9,6 +9,7 @@ from torchvision import transforms
 from torch.autograd import Variable
 
 from cirtorch.utils.general import get_data_root
+from cirtorch.utils.whiten import whitenapply
 from cirtorch.networks.imageretrievalnet import (
     init_network,
     extract_vectors,
@@ -73,6 +74,7 @@ def call_benchmark(
     image_size=1024,
     gpu=True,
     multiscale=True,
+    whitening=None,
 ):
     """Run the given network on the given data and return vectors for it."""
     net_key = (network, offtheshelf, gpu)
@@ -103,10 +105,20 @@ def call_benchmark(
         if net.meta['pooling'] == 'gem' and net.whiten is None:
             msp = net.pool.p.data.tolist()[0]
 
+    # setting up whitening
+    if whitening is not None:
+        if 'Lw' in net.meta and whitening in net.meta['Lw']:
+            if multiscale:
+                Lw = net.meta['Lw'][whitening]['ms']
+            else:
+                Lw = net.meta['Lw'][whitening]['ss']
+        else:
+            raise ValueError("invalid whitening {} (valid whitenings: {})".format(whitening, net.meta['Lw']))
+
     # set up the transform
     normalize = transforms.Normalize(
         mean=net.meta['mean'],
-        std=net.meta['std']
+        std=net.meta['std'],
     )
     transform = transforms.Compose([
         transforms.ToTensor(),
@@ -120,6 +132,10 @@ def call_benchmark(
         vecs = vectors_from_images(net, images, transform, ms=ms, msp=msp, setup_network=False, gpu=gpu)
     else:
         vecs = extract_vectors(net, paths, image_size, transform, ms=ms, msp=msp, setup_network=False, gpu=gpu)
+
+    # apply whitening
+    if whitening is not None:
+        vecs = whitenapply(vecs, Lw['m'], Lw['P'])
 
     # convert to numpy
     np_vecs = vecs.numpy().T
