@@ -74,7 +74,7 @@ def call_benchmark(
     image_size=1024,
     gpu=True,
     multiscale=True,
-    whitening="retrievalSfM120k",
+    whitening="retrieval-SfM-120k",
 ):
     """Run the given network on the given data and return vectors for it."""
     net_key = (network, offtheshelf, gpu)
@@ -113,7 +113,7 @@ def call_benchmark(
             else:
                 Lw = net.meta['Lw'][whitening]['ss']
         else:
-            raise ValueError("invalid whitening {} (valid whitenings: {})".format(whitening, net.meta['Lw']))
+            raise ValueError("invalid whitening {} (valid whitenings: {})".format(whitening, list(net.meta['Lw'].keys())))
 
     # set up the transform
     normalize = transforms.Normalize(
