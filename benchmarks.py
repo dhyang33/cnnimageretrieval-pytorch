@@ -133,11 +133,14 @@ def call_benchmark(
     else:
         vecs = extract_vectors(net, paths, image_size, transform, ms=ms, msp=msp, setup_network=False, gpu=gpu)
 
+    # convert to numpy
+    vecs = vecs.numpy()
+
     # apply whitening
     if whitening is not None:
         vecs = whitenapply(vecs, Lw['m'], Lw['P'])
 
-    # convert to numpy
-    np_vecs = vecs.numpy().T
-    print("np_vecs.shape =", np_vecs.shape)
-    return np_vecs
+    # take transpose
+    vecs = vecs.T
+    print("vecs.shape =", vecs.shape)
+    return vecs
