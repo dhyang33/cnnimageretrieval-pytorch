@@ -9,6 +9,7 @@ install:
 
 .PHONY: clean
 clean:
+	rm -rf ./logs
 	find . -name '*.pyc' -delete
 	find . -name '__pycache__' -delete
 
@@ -17,7 +18,7 @@ help:
 	python ./cirtorch/examples/test.py -h
 
 .PHONY: run-benchmarks
-run-benchmarks:
+run-benchmarks: clean
 	-mkdir ./logs
 	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'resnet101-gem' --multiscale --datasets 'scores' > ./logs/resnet-gem.log
 	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'vgg16-gem' --multiscale --datasets 'scores' > ./logs/vgg-gem.log
