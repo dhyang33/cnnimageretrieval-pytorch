@@ -21,7 +21,7 @@ from cirtorch.datasets.traindataset import TuplesDataset
 from cirtorch.datasets.testdataset import configdataset
 from cirtorch.utils.download import download_train, download_test
 from cirtorch.utils.whiten import whitenlearn, whitenapply
-from cirtorch.utils.evaluate import compute_map_and_print
+from cirtorch.utils.evaluate import compute_map_and_print, compute_mrr, compute_acc
 from cirtorch.utils.general import get_data_root, htime
 
 training_dataset_names = ['retrieval-SfM-120k', 'scores']
@@ -402,7 +402,7 @@ def test(datasets, net):
 
         print('>> {}: Learning whitening...'.format(args.test_whiten))
 
-        if args.whitening == "scores":
+        if args.test_whiten == "scores":
             # special logic for scores database
             from score_retrieval.exports import (
                 db,
@@ -474,7 +474,11 @@ def test(datasets, net):
         # search, rank, and print
         scores = np.dot(vecs.T, qvecs)
         ranks = np.argsort(-scores, axis=0)
+
+        # Compute and print metrics
+        compute_acc(ranks, cfg['gnd'], dataset)
         compute_map_and_print(dataset, ranks, cfg['gnd'])
+        compute_mrr(ranks, cfg['gnd'], dataset)
 
         if Lw is not None:
             # whiten the vectors
@@ -484,7 +488,11 @@ def test(datasets, net):
             # search, rank, and print
             scores = np.dot(vecs_lw.T, qvecs_lw)
             ranks = np.argsort(-scores, axis=0)
+
+            # Compute and print metrics
+            compute_acc(ranks, cfg['gnd'], dataset + ' + whiten')
             compute_map_and_print(dataset + ' + whiten', ranks, cfg['gnd'])
+            compute_mrr(ranks, cfg['gnd'], dataset + ' + whiten')
 
         print('>> {}: elapsed time: {}'.format(dataset, htime(time.time()-start)))
 
