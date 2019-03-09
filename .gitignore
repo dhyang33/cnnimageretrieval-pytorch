@@ -105,6 +105,6 @@ venv.bak/
 
 # temp dirs
 data/
-weights/
 logs/
-old-weights/
+weights/
+*-weights/
