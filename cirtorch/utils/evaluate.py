@@ -1,5 +1,14 @@
 import numpy as np
 
+from score_retrieval.constants import TOP_N_ACCURACY
+from score_retrieval.eval import (
+    get_db_labels,
+    get_all_pos_ranks,
+    calculate_mrr,
+    calculate_acc,
+)
+
+
 def compute_ap(ranks, nres):
     """
     Computes average precision for given ranked indexes.
@@ -38,35 +47,49 @@ def compute_ap(ranks, nres):
 
 
 def compute_mrr(ranks, gnd, dataset=None):
-    nq = len(gnd)
-    mrrs = []
-    for i in range(nq):
-        qgnd = np.array(gnd[i]["ok"])
-        if len(qgnd):
-            pos = np.arange(ranks.shape[0])[np.in1d(ranks[:,i], qgnd)]
-            mrrs.append(np.mean(1/(pos + 1)))
-    mrrs = np.asarray(mrrs)
-    mrr = np.mean(mrrs)
+    # nq = len(gnd)
+    # mrrs = []
+    # for i in range(nq):
+    #     qgnd = np.array(gnd[i]["ok"])
+    #     if len(qgnd):
+    #         pos = np.arange(ranks.shape[0])[np.in1d(ranks[:,i], qgnd)]
+    #         mrrs.append(np.mean(1/(pos + 1)))
+    # mrrs = np.asarray(mrrs)
+    # mrr = np.mean(mrrs)
+    indices_by_label = [gnd[i]["ok"] for i in range(len(gnd))]
+    db_labels = get_db_labels(indices_by_label)
+    all_pos_ranks = get_all_pos_ranks(ranks, db_labels)
+    mrr = calculate_mrr(all_pos_ranks)
+
     if dataset is not None:
         print('>> {}: mRR {:.2f}'.format(dataset, np.around(mrr, decimals=4)))
     return mrr
 
 
 def compute_acc(ranks, gnd, dataset=None):
-    nq = len(gnd)
-    total = 0
-    correct = 0
-    for i in range(nq):
-        qgnd = np.array(gnd[i]["ok"])
-        if len(qgnd):
-            pos = np.arange(ranks.shape[0])[np.in1d(ranks[:,i], qgnd)]
-            total += 1
-            if 0 in pos:
-                correct += 1
-    acc = correct/total
-    if dataset is not None:
-        print('>> {}: acc {:.2f} ({}/{})'.format(dataset, np.around(acc, decimals=4), correct, total))
-    return acc
+    # nq = len(gnd)
+    # total = 0
+    # correct = 0
+    # for i in range(nq):
+    #     qgnd = np.array(gnd[i]["ok"])
+    #     if len(qgnd):
+    #         pos = np.arange(ranks.shape[0])[np.in1d(ranks[:,i], qgnd)]
+    #         total += 1
+    #         if 0 in pos:
+    #             correct += 1
+    # acc = correct/total
+    top_1_acc = None
+    for top_n in range(1, TOP_N_ACCURACY + 1):
+        indices_by_label = [gnd[i]["ok"] for i in range(len(gnd))]
+        db_labels = get_db_labels(indices_by_label)
+        all_pos_ranks = get_all_pos_ranks(ranks, db_labels)
+        acc, correct, total = calculate_acc(all_pos_ranks, top_n)
+        if top_n == 1:
+            top_1_acc = acc
+
+        if dataset is not None:
+            print('>> {}: top {} acc {:.2f} ({}/{})'.format(top_n, dataset, np.around(acc, decimals=4), correct, total))
+    return top_1_acc
 
 
 def compute_map(ranks, gnd, kappas=[]):
