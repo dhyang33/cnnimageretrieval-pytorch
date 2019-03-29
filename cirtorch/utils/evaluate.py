@@ -49,6 +49,7 @@ def get_all_pos_ranks_for_dataset(ranks, gnd, dataset):
     if dataset in ["scores", "scores + whiten"]:
         return get_all_pos_ranks(ranks)
     else:
+        print("WARNING: Using old pos_ranks evaluation formula for dataset {}.".format(dataset))
         nq = len(gnd)
         all_pos = []
         for i in range(nq):
