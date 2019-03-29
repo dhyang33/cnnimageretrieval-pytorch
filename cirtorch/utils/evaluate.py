@@ -46,6 +46,14 @@ def compute_ap(ranks, nres):
     return ap
 
 
+def get_db_labels(gnd, dataset):
+    if dataset == "scores":
+        return None
+    else:
+        indices_by_label = [gnd[i]["ok"] for i in range(len(gnd))]
+        return get_db_labels(indices_by_label)
+
+
 def compute_mrr(ranks, gnd, dataset=None):
     # nq = len(gnd)
     # mrrs = []
@@ -56,8 +64,7 @@ def compute_mrr(ranks, gnd, dataset=None):
     #         mrrs.append(np.mean(1/(pos + 1)))
     # mrrs = np.asarray(mrrs)
     # mrr = np.mean(mrrs)
-    indices_by_label = [gnd[i]["ok"] for i in range(len(gnd))]
-    db_labels = get_db_labels(indices_by_label)
+    db_labels = get_db_labels(gnd, dataset)
     all_pos_ranks = get_all_pos_ranks(ranks, db_labels)
     mrr = calculate_mrr(all_pos_ranks)
 
@@ -80,8 +87,7 @@ def compute_acc(ranks, gnd, dataset=None):
     # acc = correct/total
     top_1_acc = None
     for top_n in range(1, TOP_N_ACCURACY + 1):
-        indices_by_label = [gnd[i]["ok"] for i in range(len(gnd))]
-        db_labels = get_db_labels(indices_by_label)
+        db_labels = get_db_labels(gnd, dataset)
         all_pos_ranks = get_all_pos_ranks(ranks, db_labels)
         acc, correct, total = calculate_acc(all_pos_ranks, top_n)
         if top_n == 1:
