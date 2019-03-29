@@ -46,7 +46,7 @@ def compute_ap(ranks, nres):
 
 
 def get_all_pos_ranks_for_dataset(ranks, gnd, dataset):
-    if dataset == "scores":
+    if dataset in ["scores", "scores + whiten"]:
         return get_all_pos_ranks(ranks)
     else:
         nq = len(gnd)
