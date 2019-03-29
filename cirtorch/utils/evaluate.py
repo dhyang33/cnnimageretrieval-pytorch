@@ -75,7 +75,7 @@ def compute_acc(ranks, gnd, dataset=None):
         if top_n == 1:
             top_1_acc = acc
         if dataset is not None:
-            print('>> {}: top {} acc {:.2f} ({}/{})'.format(top_n, dataset, np.around(acc, decimals=4), correct, total))
+            print('>> {}: top {} acc {:.2f} ({}/{})'.format(dataset, top_n, np.around(acc, decimals=4), correct, total))
     return top_1_acc
 
 
