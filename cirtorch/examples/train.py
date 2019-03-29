@@ -477,8 +477,8 @@ def test(datasets, net):
 
         # Compute and print metrics
         compute_acc(ranks, cfg['gnd'], dataset)
-        compute_map_and_print(dataset, ranks, cfg['gnd'])
         compute_mrr(ranks, cfg['gnd'], dataset)
+        compute_map_and_print(dataset, ranks, cfg['gnd'])
 
         if Lw is not None:
             # whiten the vectors
@@ -491,8 +491,8 @@ def test(datasets, net):
 
             # Compute and print metrics
             compute_acc(ranks, cfg['gnd'], dataset + ' + whiten')
-            compute_map_and_print(dataset + ' + whiten', ranks, cfg['gnd'])
             compute_mrr(ranks, cfg['gnd'], dataset + ' + whiten')
+            compute_map_and_print(dataset + ' + whiten', ranks, cfg['gnd'])
 
         print('>> {}: elapsed time: {}'.format(dataset, htime(time.time()-start)))
 

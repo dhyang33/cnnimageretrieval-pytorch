@@ -247,8 +247,8 @@ def main():
 
         # Compute and print metrics
         compute_acc(ranks, gnd, dataset)
-        compute_map_and_print(dataset, ranks, gnd)
         compute_mrr(ranks, gnd, dataset)
+        compute_map_and_print(dataset, ranks, gnd)
 
         if Lw is not None:
             # whiten the vectors
@@ -259,8 +259,8 @@ def main():
             scores = np.dot(vecs_lw.T, qvecs_lw)
             ranks = np.argsort(-scores, axis=0)
             compute_acc(ranks, gnd, dataset + " + whiten")
-            compute_map_and_print(dataset + " + whiten", ranks, gnd)
             compute_mrr(ranks, gnd, dataset + " + whiten")
+            compute_map_and_print(dataset + " + whiten", ranks, gnd)
 
         print('>> {}: elapsed time: {}'.format(dataset, htime(time.time()-start)))
 
