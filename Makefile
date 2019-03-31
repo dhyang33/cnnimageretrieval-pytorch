@@ -73,7 +73,7 @@ vgg-spoc:
 
 .PHONY: tuned-vgg-gem
 tuned-vgg-gem:
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-path ./weights/scores_vgg16_gem_whiten_contrastive_m0.85_adam_lr1.0e-06_wd1.0e-04_nnum5_qsize2000_psize20000_bsize5_imsize512/model_best.pth.tar --multiscale --datasets 'scores' --whitening 'scores'
+	python ./cirtorch/examples/test.py --gpu-id '0' --network-path ./weights/scores_vgg16_gem_whiten_contrastive_m0.85_adam_lr1.0e-06_wd1.0e-04_nnum5_qsize2000_psize20000_bsize5_imsize384/model_best.pth.tar --multiscale --datasets 'scores' --whitening 'scores'
 
 .PHONY: train-example-vgg-gem
 train-example-vgg-gem:
@@ -81,16 +81,16 @@ train-example-vgg-gem:
 
 .PHONY: train-vgg-gem
 train-vgg-gem:
-	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'scores' --test-datasets 'scores' --arch 'vgg16' --pool 'gem' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000 --pool-size=20000 --batch-size 4 --image-size 512 --whitening --test-whiten 'scores'
+	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'scores' --test-datasets 'scores' --arch 'vgg16' --pool 'gem' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000 --pool-size=20000 --batch-size 4 --image-size 384 --whitening --test-whiten 'scores'
 
 .PHONY: train-vgg-rmac
 train-vgg-rmac:
-	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'scores' --test-datasets 'scores' --arch 'vgg16' --pool 'rmac' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000 --pool-size=20000 --batch-size 4 --image-size 512 --whitening --test-whiten 'scores'
+	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'scores' --test-datasets 'scores' --arch 'vgg16' --pool 'rmac' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000 --pool-size=20000 --batch-size 4 --image-size 384 --whitening --test-whiten 'scores'
 
 .PHONY: train-resnet-gem
 train-resnet-gem:
-	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'scores' --test-datasets 'scores' --arch 'resnet101' --pool 'gem' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000 --pool-size=20000 --batch-size 4 --image-size 512 --whitening --test-whiten 'scores'
+	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'scores' --test-datasets 'scores' --arch 'resnet101' --pool 'gem' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000 --pool-size=20000 --batch-size 4 --image-size 384 --whitening --test-whiten 'scores'
 
 .PHONY: train-resnet-rmac
 train-resnet-rmac:
-	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'scores' --test-datasets 'scores' --arch 'resnet101' --pool 'rmac' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000 --pool-size=20000 --batch-size 4 --image-size 512 --whitening --test-whiten 'scores'
+	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'scores' --test-datasets 'scores' --arch 'resnet101' --pool 'rmac' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=2000 --pool-size=20000 --batch-size 4 --image-size 384 --whitening --test-whiten 'scores'
