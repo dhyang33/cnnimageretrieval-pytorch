@@ -73,7 +73,7 @@ vgg-spoc:
 
 .PHONY: tuned-vgg-gem
 tuned-vgg-gem:
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-path ./weights/scores_vgg16_gem_whiten_contrastive_m0.85_adam_lr1.0e-06_wd1.0e-04_nnum5_qsize2000_psize20000_bsize5_imsize384/model_best.pth.tar --multiscale --datasets 'scores' --whitening 'scores'
+	python ./cirtorch/examples/test.py --gpu-id '0' --network-path ./weights/scores_vgg16_gem_whiten_contrastive_m0.85_adam_lr1.0e-06_wd1.0e-04_nnum5_qsize2000_psize20000_bsize4_imsize384/model_best.pth.tar --multiscale --datasets 'scores' --whitening 'scores'
 
 .PHONY: train-example-vgg-gem
 train-example-vgg-gem:
