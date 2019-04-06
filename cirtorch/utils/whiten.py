@@ -62,4 +62,5 @@ def safe_cholesky(S):
     try:
         return np.linalg.cholesky(S)
     except np.linalg.LinAlgError:
+        print("Got non-PSD matrix, using nearest PSD matrix instead.")
         return np.linalg.cholesky(nearPSD(S))
