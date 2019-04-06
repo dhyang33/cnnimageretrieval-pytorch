@@ -81,11 +81,11 @@ vgg-spoc:
 
 .PHONY: tuned-vgg-gem
 tuned-vgg-gem:
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-path ./weights/scores_vgg16_gem_whiten_contrastive_m0.85_adam_lr1.0e-06_wd1.0e-04_nnum5_qsize1000_psize10000_bsize3_imsize1024/model_best.pth.tar --multiscale --datasets 'scores' --whitening 'scores'
+	python ./cirtorch/examples/test.py --gpu-id '0' --network-path ./weights/scores_vgg16_gem_whiten_contrastive_m0.85_adam_lr1.0e-06_wd1.0e-04_nnum4_qsize750_psize7500_bsize3_imsize1024/model_best.pth.tar --multiscale --datasets 'scores' --whitening 'scores'
 
 .PHONY: train-vgg-gem
 train-vgg-gem:
-	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'scores' --test-datasets 'scores' --arch 'vgg16' --pool 'gem' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=1000 --pool-size=10000 --batch-size 2 --image-size 1024 --whitening --test-whiten 'scores'
+	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'scores' --test-datasets 'scores' --arch 'vgg16' --pool 'gem' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 4 --query-size=750 --pool-size=7500 --batch-size 2 --image-size 1024 --whitening --test-whiten 'scores'
 
 .PHONY: train-example-vgg-gem
 train-example-vgg-gem:
