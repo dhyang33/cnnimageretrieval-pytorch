@@ -9,7 +9,7 @@ from torchvision import transforms
 from torch.autograd import Variable
 
 from cirtorch.utils.general import get_data_root
-from cirtorch.utils.whiten import whitenapply
+from cirtorch.utils.whiten import whitenlearn, whitenapply
 from cirtorch.networks.imageretrievalnet import (
     init_network,
     extract_vectors,
@@ -23,6 +23,10 @@ from cirtorch.examples.test import (
 )
 
 from score_retrieval.data import indices_with_label
+from score_retrieval.exports import (
+    db,
+    train_images,
+)
 
 
 def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10, setup_network=True, gpu=True):
@@ -61,6 +65,32 @@ def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10, se
     return vecs
 
 
+LEARNED_WHITENING = {}
+
+
+def get_scores_whitening(net_key, net, transform, ms, msp, image_size):
+    """Learn scores whitening for the given network."""
+    if net_key in LEARNED_WHITENING:
+        return LEARNED_WHITENING[net_key]
+
+    else:
+        print("Learning scores whitening...")
+
+        # extract whitening vectors
+        wvecs = extract_vectors(net, train_images, image_size, transform, ms=ms, msp=msp)
+
+        # learning whitening
+        wvecs = wvecs.numpy()
+        m, P = whitenlearn(wvecs, db['qidxs'], db['pidxs'])
+        Lw = {'m': m, 'P': P}
+
+        # cache learned whitening
+        LEARNED_WHITENING[net_key] = Lw
+
+        print("Whitening learned and cached.")
+        return Lw
+
+
 LOADED_NETWORKS = {}
 
 
@@ -71,10 +101,10 @@ def call_benchmark(
 
     network="retrievalSfM120k-vgg16-gem",
     offtheshelf=False,
-    image_size=1024,
+    image_size=128,
     gpu=True,
     multiscale=True,
-    whitening="retrieval-SfM-120k",
+    whitening="scores",
 ):
     """Run the given network on the given data and return vectors for it."""
     net_key = (network, offtheshelf, gpu)
@@ -105,16 +135,6 @@ def call_benchmark(
         if net.meta['pooling'] == 'gem' and net.whiten is None:
             msp = net.pool.p.data.tolist()[0]
 
-    # setting up whitening
-    if whitening is not None:
-        if 'Lw' in net.meta and whitening in net.meta['Lw']:
-            if multiscale:
-                Lw = net.meta['Lw'][whitening]['ms']
-            else:
-                Lw = net.meta['Lw'][whitening]['ss']
-        else:
-            raise ValueError("invalid whitening {} (valid whitenings: {})".format(whitening, list(net.meta['Lw'].keys())))
-
     # set up the transform
     normalize = transforms.Normalize(
         mean=net.meta['mean'],
@@ -124,6 +144,18 @@ def call_benchmark(
         transforms.ToTensor(),
         normalize,
     ])
+
+    # setting up whitening
+    if whitening is not None:
+        if 'Lw' in net.meta and whitening in net.meta['Lw']:
+            if multiscale:
+                Lw = net.meta['Lw'][whitening]['ms']
+            else:
+                Lw = net.meta['Lw'][whitening]['ss']
+        elif whitening == "scores":
+            Lw = get_scores_whitening(net_key, net, transform, ms, msp, image_size)
+        else:
+            raise ValueError("invalid whitening {} (valid whitenings: {})".format(whitening, list(net.meta['Lw'].keys())))
 
     # process the given data
     if images is not None:

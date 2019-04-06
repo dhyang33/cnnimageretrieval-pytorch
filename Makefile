@@ -20,56 +20,64 @@ help:
 .PHONY: run-benchmarks
 run-benchmarks: clean
 	-mkdir ./logs
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'resnet101-gem' --multiscale --datasets 'scores' > ./logs/resnet-gem.log
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'vgg16-gem' --multiscale --datasets 'scores' > ./logs/vgg-gem.log
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-path 'retrievalSfM120k-resnet101-gem' --multiscale --datasets 'scores' > ./logs/pretuned-resnet-gem.log --whitening 'retrieval-SfM-120k'
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-path 'retrievalSfM120k-vgg16-gem' --multiscale --datasets 'scores' > ./logs/pretuned-vgg-gem.log --whitening 'retrieval-SfM-120k'
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'resnet101-rmac' --multiscale --datasets 'scores' > ./logs/resnet-rmac.log
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'vgg16-rmac' --multiscale --datasets 'scores' > ./logs/vgg-rmac.log
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'resnet101-mac' --multiscale --datasets 'scores' > ./logs/resnet-mac.log
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'vgg16-mac' --multiscale --datasets 'scores' > ./logs/vgg-mac.log
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'resnet101-spoc' --multiscale --datasets 'scores' > ./logs/resnet-spoc.log
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'vgg16-spoc' --multiscale --datasets 'scores' > ./logs/vgg-spoc.log
+	make resnet-gem > ./logs/resnet-gem.log
+	make vgg-gem > ./logs/vgg-gem.log
+	make pretuned-resnet-gem > ./logs/pretuned-resnet-gem.log
+	make pretuned-vgg-gem > ./logs/pretuned-vgg-gem.log
+	make resnet-rmac > ./logs/resnet-rmac.log
+	make vgg-rmac > ./logs/vgg-rmac.log
+	make resnet-mac > ./logs/resnet-mac.log
+	make vgg-mac > ./logs/vgg-mac.log
+	make resnet-spoc > ./logs/resnet-spoc.log
+	make vgg-spoc > ./logs/vgg-spoc.log
 
 .PHONY: resnet-gem
 resnet-gem:
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'resnet101-gem' --multiscale --datasets 'scores'
+	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'resnet101-gem' --multiscale --datasets 'scores' --whitening 'scores'
 
 .PHONY: vgg-gem
 vgg-gem:
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'vgg16-gem' --multiscale --datasets 'scores'
+	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'vgg16-gem' --multiscale --datasets 'scores' --whitening 'scores'
 
 .PHONY: pretuned-resnet-gem
 pretuned-resnet-gem:
+	python ./cirtorch/examples/test.py --gpu-id '0' --network-path 'retrievalSfM120k-resnet101-gem' --multiscale --datasets 'scores' --whitening 'scores'
+
+.PHONY: prewhitened-resnet-gem
+prewhitened-resnet-gem:
 	python ./cirtorch/examples/test.py --gpu-id '0' --network-path 'retrievalSfM120k-resnet101-gem' --multiscale --datasets 'scores' --whitening 'retrieval-SfM-120k'
 
 .PHONY: pretuned-vgg-gem
 pretuned-vgg-gem:
+	python ./cirtorch/examples/test.py --gpu-id '0' --network-path 'retrievalSfM120k-vgg16-gem' --multiscale --datasets 'scores' --whitening 'scores'
+
+.PHONY: prewhitened-vgg-gem
+prewhitened-vgg-gem:
 	python ./cirtorch/examples/test.py --gpu-id '0' --network-path 'retrievalSfM120k-vgg16-gem' --multiscale --datasets 'scores' --whitening 'retrieval-SfM-120k'
 
 .PHONY: resnet-rmac
 resnet-rmac:
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'resnet101-rmac' --multiscale --datasets 'scores'
+	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'resnet101-rmac' --multiscale --datasets 'scores' --whitening 'scores'
 
 .PHONY: vgg-rmac
 vgg-rmac:
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'vgg16-rmac' --multiscale --datasets 'scores'
+	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'vgg16-rmac' --multiscale --datasets 'scores' --whitening 'scores'
 
 .PHONY: resnet-mac
 resnet-mac:
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'resnet101-mac' --multiscale --datasets 'scores'
+	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'resnet101-mac' --multiscale --datasets 'scores' --whitening 'scores'
 
 .PHONY: vgg-mac
 vgg-mac:
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'vgg16-mac' --multiscale --datasets 'scores'
+	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'vgg16-mac' --multiscale --datasets 'scores' --whitening 'scores'
 
 .PHONY: resnet-spoc
 resnet-spoc:
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'resnet101-spoc' --multiscale --datasets 'scores'
+	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'resnet101-spoc' --multiscale --datasets 'scores' --whitening 'scores'
 
 .PHONY: vgg-spoc
 vgg-spoc:
-	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'vgg16-spoc' --multiscale --datasets 'scores'
+	python ./cirtorch/examples/test.py --gpu-id '0' --network-offtheshelf 'vgg16-spoc' --multiscale --datasets 'scores' --whitening 'scores'
 
 .PHONY: tuned-vgg-gem
 tuned-vgg-gem:
