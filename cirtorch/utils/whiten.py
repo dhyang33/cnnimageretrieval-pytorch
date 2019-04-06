@@ -1,7 +1,7 @@
 import numpy as np
 
 def whitenapply(X, m, P, dimensions=None):
-    
+
     if not dimensions:
         dimensions = P.shape[0]
 
@@ -25,7 +25,7 @@ def pcawhitenlearn(X):
     eigvec = eigvec[:, order]
 
     P = np.dot(np.linalg.inv(np.sqrt(np.diag(eigval))), eigvec.T)
-    
+
     return m, P
 
 def whitenlearn(X, qidxs, pidxs):
@@ -34,7 +34,7 @@ def whitenlearn(X, qidxs, pidxs):
     m = X[:, qidxs].mean(axis=1, keepdims=True)
     df = X[:, qidxs] - X[:, pidxs]
     S = np.dot(df, df.T) / df.shape[1]
-    P = np.linalg.inv(np.linalg.cholesky(S))
+    P = np.linalg.inv(safe_cholesky(S))
     df = np.dot(P, X-m)
     D = np.dot(df, df.T)
     eigval, eigvec = np.linalg.eig(D)
@@ -45,3 +45,21 @@ def whitenlearn(X, qidxs, pidxs):
     P = np.dot(eigvec.T, P)
 
     return m, P
+
+def nearPSD(A, epsilon=0):
+    """Shamelessly stolen from https://stackoverflow.com/questions/10939213/how-can-i-calculate-the-nearest-positive-semi-definite-matrix."""
+    n = A.shape[0]
+    eigval, eigvec = np.linalg.eig(A)
+    val = np.matrix(np.maximum(eigval,epsilon))
+    vec = np.matrix(eigvec)
+    T = 1/(np.multiply(vec, vec) * val.T)
+    T = np.matrix(np.sqrt(np.diag(np.array(T).reshape((n)))))
+    B = T * vec * np.diag(np.array(np.sqrt(val)).reshape((n)))
+    return B * B.T
+
+def safe_cholesky(S):
+    """Cholesky decomposition allowing non-PSD matrices."""
+    try:
+        return np.linalg.cholesky(S)
+    except np.linalg.LinAlgError:
+        return np.linalg.cholesky(nearPSD(S))
