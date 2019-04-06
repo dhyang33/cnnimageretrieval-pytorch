@@ -46,7 +46,7 @@ def whitenlearn(X, qidxs, pidxs):
 
     return m, P
 
-def nearPSD(A, epsilon=np.epsilon):
+def nearPSD(A, epsilon=np.finfo(float).eps):
     """Shamelessly stolen from https://stackoverflow.com/questions/10939213/how-can-i-calculate-the-nearest-positive-semi-definite-matrix."""
     n = A.shape[0]
     eigval, eigvec = np.linalg.eig(A)
