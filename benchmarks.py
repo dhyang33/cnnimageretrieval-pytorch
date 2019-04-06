@@ -70,8 +70,10 @@ LEARNED_WHITENING = {}
 
 def get_scores_whitening(net_key, net, transform, ms, msp, image_size, setup_network=True, gpu=True):
     """Learn scores whitening for the given network."""
-    if net_key in LEARNED_WHITENING:
-        return LEARNED_WHITENING[net_key]
+    whiten_key = net_key[:-1] + (ms, msp, image_size)
+
+    if whiten_key in LEARNED_WHITENING:
+        return LEARNED_WHITENING[whiten_key]
 
     else:
         print("Learning scores whitening...")
@@ -85,7 +87,7 @@ def get_scores_whitening(net_key, net, transform, ms, msp, image_size, setup_net
         Lw = {'m': m, 'P': P}
 
         # cache learned whitening
-        LEARNED_WHITENING[net_key] = Lw
+        LEARNED_WHITENING[whiten_key] = Lw
 
         print("Whitening learned and cached.")
         return Lw
