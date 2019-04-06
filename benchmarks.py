@@ -68,10 +68,8 @@ def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10, se
 LEARNED_WHITENING = {}
 
 
-def get_scores_whitening(net_key, net, transform, ms, msp, image_size, setup_network=True, gpu=True):
+def get_scores_whitening(whiten_key, net, transform, ms, msp, image_size, setup_network=True, gpu=True):
     """Learn scores whitening for the given network."""
-    whiten_key = net_key[:-1] + (ms, msp, image_size)
-
     if whiten_key in LEARNED_WHITENING:
         return LEARNED_WHITENING[whiten_key]
 
@@ -117,6 +115,7 @@ def call_benchmark(
     # load params
     params = default_params.copy()
     params.update(kwargs)
+
     network = params["network"]
     offtheshelf = params["offtheshelf"]
     image_size = params["image_size"]
@@ -170,7 +169,8 @@ def call_benchmark(
             else:
                 Lw = net.meta['Lw'][whitening]['ss']
         elif whitening == "scores":
-            Lw = get_scores_whitening(net_key, net, transform, ms, msp, image_size, setup_network=False, gpu=gpu)
+            whiten_key = (network, offtheshelf, image_size, multiscale)
+            Lw = get_scores_whitening(whiten_key, net, transform, ms, msp, image_size, setup_network=False, gpu=gpu)
         else:
             raise ValueError("invalid whitening {} (valid whitenings: {})".format(whitening, list(net.meta['Lw'].keys())))
 
