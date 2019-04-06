@@ -96,19 +96,34 @@ def get_scores_whitening(net_key, net, transform, ms, msp, image_size, setup_net
 LOADED_NETWORKS = {}
 
 
-def call_benchmark(
-    # must pass one of images or paths
-    images=None,
-    paths=None,
-
+# We store these in a dict so they can be modified externally.
+default_params = dict(
     network="retrievalSfM120k-vgg16-gem",
     offtheshelf=False,
     image_size=1024,
     gpu=True,
     multiscale=True,
     whitening="scores",
+)
+
+
+def call_benchmark(
+    # must pass one of images or paths
+    images=None,
+    paths=None,
+    **kwargs,
 ):
     """Run the given network on the given data and return vectors for it."""
+    # load params
+    params = default_params.copy()
+    params.update(kwargs)
+    network = params["network"]
+    offtheshelf = params["offtheshelf"]
+    image_size = params["image_size"]
+    gpu = params["gpu"]
+    multiscale = params["multiscale"]
+    whitening = params["whitening"]
+
     net_key = (network, offtheshelf, gpu)
 
     if net_key in LOADED_NETWORKS:
