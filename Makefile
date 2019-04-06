@@ -85,7 +85,7 @@ tuned-vgg-gem:
 
 .PHONY: train-vgg-gem
 train-vgg-gem:
-	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'scores' --test-datasets 'scores' --arch 'vgg16' --pool 'gem' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=1000 --pool-size=10000 --batch-size 3 --image-size 1024 --whitening --test-whiten 'scores'
+	python ./cirtorch/examples/train.py ./weights --gpu-id '0' --training-dataset 'scores' --test-datasets 'scores' --arch 'vgg16' --pool 'gem' --loss 'contrastive' --loss-margin 0.85 --optimizer 'adam' --lr 1e-6 --neg-num 5 --query-size=1000 --pool-size=10000 --batch-size 2 --image-size 1024 --whitening --test-whiten 'scores'
 
 .PHONY: train-example-vgg-gem
 train-example-vgg-gem:
