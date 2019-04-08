@@ -5,6 +5,7 @@ from score_retrieval.eval import (
     get_all_pos_ranks,
     calculate_mrr,
     calculate_acc,
+    calculate_map,
 )
 
 
@@ -186,6 +187,13 @@ def compute_map_and_print(dataset, ranks, gnd, kappas=[1, 5, 10]):
 
         print('>> {}: mAP E: {}, M: {}, H: {}'.format(dataset, np.around(mapE, decimals=4), np.around(mapM, decimals=4), np.around(mapH, decimals=4)))
         print('>> {}: mP@k{} E: {}, M: {}, H: {}'.format(dataset, kappas, np.around(mprE, decimals=4), np.around(mprM, decimals=4), np.around(mprH, decimals=4)))
+
+    # scores evaluation protocol
+    elif dataset in ["scores", "scores + whiten"]:
+        all_pos_ranks = get_all_pos_ranks_for_dataset(ranks, gnd, dataset)
+        map = calculate_map(all_pos_ranks)
+        print('>> {}: mAP {:.2f}'.format(dataset, np.around(map, decimals=4)))
+        return map
 
     # old evaluation protocol
     else:
