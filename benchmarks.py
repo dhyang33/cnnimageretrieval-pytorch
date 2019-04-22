@@ -29,6 +29,15 @@ from score_retrieval.exports import (
 )
 
 
+# can be imported and used as a network argument
+tuned_network_path = os.path.join(
+    os.path.dirname(__file__),
+    "weights",
+    "scores_vgg16_gem_whiten_contrastive_m0.85_adam_lr1.0e-06_wd1.0e-04_nnum2_qsize250_psize2500_bsize1_imsize1024",
+    "model_epoch100.pth.tar",
+)
+
+
 def vectors_from_images(net, images, transform, ms=[1], msp=1, print_freq=10, setup_network=True, gpu=True):
     """Extract vectors from images given as a pytorch array."""
     # moving network to gpu and eval mode
