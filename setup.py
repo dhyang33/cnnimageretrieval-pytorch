@@ -7,7 +7,7 @@ setuptools.setup(
     install_requires=[
         "numpy",
         "scipy",
-        "pytorch",
+        "torch",
         "torchvision",
     ],
     packages=setuptools.find_packages(),
